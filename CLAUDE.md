@@ -6,7 +6,7 @@
 
 You're running in one of two contexts. Check which one before doing anything:
 
-- **Collaborator context (StackBlitz, browser):** the user is on the `sandbox` branch in a StackBlitz WebContainer. The dev server is already running. They're a non-developer making content edits. Their pushes go to the sandbox URL only — production updates only when the owner clicks "publish" in GitHub Actions.
+- **Collaborator context (GitHub Codespace, browser):** the user is on the `sandbox` branch in a Codespace (browser-based VS Code on a real Linux container). They've started the dev server with `npm run dev` and are running you via `claude` in a second terminal. They're a non-developer making content edits. Their pushes go to the sandbox URL only — production updates only when the owner clicks "publish" in GitHub Actions.
 
 - **Owner context (local machine):** the user is Dustin, the owner. He runs Ubuntu, uses Claude Code locally, and has full control. He may push to `main` or `sandbox`, run the promote/revert workflows, and refactor things the collaborator can't.
 
@@ -31,7 +31,7 @@ A members' app for The Oak Room at The Post Oak Hotel (Houston, TX). Built as Ne
    (you + owner only)                  (members)
 
    Collaborator pushes here                       │
-   from StackBlitz                                │
+   from a Codespace                               │
         │                                        │
         └─── one-click "Promote" Action ─────────┘
         (manually triggered in GitHub UI by owner)
@@ -58,7 +58,7 @@ These are plain JavaScript objects/arrays at the top of `components/ClubApp.jsx`
 
 - **The color palette** (`COBALT`, `GRAPHITE`, `MARBLE`, `VEIN`, etc. near the top of `ClubApp.jsx`). Visual identity is deliberately tuned. If the user says "make it red" or "change the theme," confirm before sweeping color changes.
 - **The component structure / tab list.** Adding/removing tabs is a design decision. Confirm scope first.
-- **`app/layout.jsx`, `app/page.jsx`, `next.config.js`, `tailwind.config.js`, `package.json`, `.stackblitzrc`.** Plumbing — don't change unless the user is explicitly asking for a build/deploy/dependency change.
+- **`app/layout.jsx`, `app/page.jsx`, `next.config.js`, `tailwind.config.js`, `package.json`, `.devcontainer/`.** Plumbing — don't change unless the user is explicitly asking for a build/deploy/dependency change.
 - **Anything in `.github/workflows/`.** That's the promote/revert automation. Breaking it stops the publishing flow. (Owner context: feel free to edit if asked.)
 
 ## Style and voice
@@ -75,7 +75,7 @@ When writing event copy, use `EVENTS[1]` (Annual Derby Watch Party) as a referen
 
 ## Commit and push workflow
 
-### Collaborator context (StackBlitz, on sandbox branch)
+### Collaborator context (Codespace, on sandbox branch)
 
 1. Make the edit in `components/ClubApp.jsx`.
 2. **Verify the build first:**
