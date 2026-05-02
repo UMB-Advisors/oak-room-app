@@ -21,8 +21,8 @@ import {
 // Graphite + Carrara marble • cobalt accents
 // ───────────────────────────────────────────────────────────────────
 
-const COBALT = "#2547D8";        // the accent — sharp, electric, alive
-const COBALT_DEEP = "#1631A8";
+const COBALT = "#2E6B8A";        // the accent — sharp, electric, alive
+const COBALT_DEEP = "#1E4D66";
 const GRAPHITE = "#1C1D20";      // primary surface
 const GRAPHITE_2 = "#26282C";    // raised surface
 const CHARCOAL = "#0F1012";      // deepest
