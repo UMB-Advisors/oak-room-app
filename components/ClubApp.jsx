@@ -22,15 +22,16 @@ import {
 // Graphite + Carrara marble • cobalt accents
 // ───────────────────────────────────────────────────────────────────
 
-const COBALT = "#2E6B8A";        // the accent — sharp, electric, alive
-const COBALT_DEEP = "#1E4D66";
+const COBALT = "#2B6CB0";        // the accent — true royal blue, members'-club presence
+const COBALT_DEEP = "#1A4A8C";
 const GRAPHITE = "#1C1D20";      // primary surface
 const GRAPHITE_2 = "#26282C";    // raised surface
 const CHARCOAL = "#0F1012";      // deepest
 const MARBLE = "#F4F1EA";        // off-white, warm
 const MARBLE_2 = "#E8E3D8";      // veined shadow
-const VEIN = "#9AA3AE";          // cool grey vein
-const TEXT_DIM = "#8B8E94";
+const VEIN = "#9AA3AE";          // cool grey vein — borders, dividers, SVG strokes
+const VEIN_TEXT = "#B8C2CC";     // brighter vein — text-only, ≈5.2:1 on GRAPHITE for WCAG AA
+const TEXT_DIM = "#A4A8AE";      // bumped from #8B8E94 for AA contrast
 
 const fontStack = {
   display: "'Canela', 'GT Super Display', 'Cormorant Garamond', Georgia, serif",
@@ -142,7 +143,7 @@ const Divider = ({ label }) => (
     {label && (
       <span
         className="text-[10px] tracking-[0.4em] uppercase"
-        style={{ color: VEIN, fontFamily: fontStack.body }}
+        style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
       >
         {label}
       </span>
@@ -210,7 +211,7 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
 
   return (
     <div className="px-5 pt-3 pb-32">
-      <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+      <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
         For you
       </p>
       <h1
@@ -245,7 +246,7 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
         >
           {firstName} — the sommelier set aside a half-bottle of the '22 Tres Colline Pinot for Thursday's wine night. We'll have it waiting.
         </p>
-        <p className="mt-4 text-right text-[10px] tracking-[0.3em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+        <p className="mt-4 text-right text-[10px] tracking-[0.3em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
           — Eli, head sommelier
         </p>
       </motion.div>
@@ -269,7 +270,7 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-[8px] tracking-[0.3em]" style={{ color: COBALT, fontFamily: fontStack.body, fontWeight: 500 }}>
+                <p className="text-[10px] tracking-[0.3em]" style={{ color: COBALT, fontFamily: fontStack.body, fontWeight: 500 }}>
                   {e.date} · {e.time}
                 </p>
                 <h3
@@ -315,7 +316,7 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
         }}
       >
         <div>
-          <p className="text-[9px] tracking-[0.4em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+          <p className="text-[9px] tracking-[0.4em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
             The pattern
           </p>
           <p
@@ -398,7 +399,7 @@ const HomeScreen = ({ events, onRSVP }) => {
       {/* Header */}
       <div className="flex items-end justify-between mb-3">
         <div>
-          <p className="text-[9px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+          <p className="text-[9px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
             Upcoming
           </p>
           <h1
@@ -408,7 +409,7 @@ const HomeScreen = ({ events, onRSVP }) => {
             The book of <em style={{ color: COBALT }}>hours</em>
           </h1>
         </div>
-        <span className="text-[9px] tracking-[0.3em] uppercase pb-1" style={{ color: VEIN, fontFamily: fontStack.body }}>
+        <span className="text-[9px] tracking-[0.3em] uppercase pb-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
           {events.length} ahead
         </span>
       </div>
@@ -444,12 +445,12 @@ const HomeScreen = ({ events, onRSVP }) => {
             <div className="p-3 h-full flex flex-col justify-between">
               <div>
                 <p
-                  className="text-[8px] tracking-[0.3em]"
+                  className="text-[10px] tracking-[0.3em]"
                   style={{ color: COBALT, fontFamily: fontStack.body, fontWeight: 500 }}
                 >
                   {e.date}
                 </p>
-                <p className="text-[8px] tracking-[0.3em] mt-0.5" style={{ color: VEIN, fontFamily: fontStack.body }}>
+                <p className="text-[10px] tracking-[0.3em] mt-0.5" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
                   {e.time}
                 </p>
               </div>
@@ -505,7 +506,7 @@ const HomeScreen = ({ events, onRSVP }) => {
               <button
                 onClick={() => setExpandedId(null)}
                 className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center z-10"
-                style={{ color: VEIN, border: `1px solid ${VEIN}55` }}
+                style={{ color: VEIN_TEXT, border: `1px solid ${VEIN}55` }}
               >
                 <X size={12} />
               </button>
@@ -535,11 +536,11 @@ const HomeScreen = ({ events, onRSVP }) => {
 
                 <div className="mt-4 space-y-1.5">
                   <div className="flex justify-between text-[10px] tracking-[0.2em] uppercase" style={{ fontFamily: fontStack.body }}>
-                    <span style={{ color: VEIN }}>Host</span>
+                    <span style={{ color: VEIN_TEXT }}>Host</span>
                     <span style={{ color: MARBLE + "CC" }}>{expanded.host}</span>
                   </div>
                   <div className="flex justify-between text-[10px] tracking-[0.2em] uppercase" style={{ fontFamily: fontStack.body }}>
-                    <span style={{ color: VEIN }}>Details</span>
+                    <span style={{ color: VEIN_TEXT }}>Details</span>
                     <span style={{ color: MARBLE + "CC" }}>{expanded.spots}</span>
                   </div>
                 </div>
@@ -583,7 +584,7 @@ const GuestsScreen = ({ guests, onAdd }) => {
 
   return (
     <div className="px-6 pt-3 pb-32">
-      <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+      <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
         Front desk register
       </p>
       <h1
@@ -614,7 +615,7 @@ const GuestsScreen = ({ guests, onAdd }) => {
               >
                 {g.name}
               </p>
-              <p className="text-[10px] tracking-[0.2em] mt-1" style={{ color: VEIN, fontFamily: fontStack.mono }}>
+              <p className="text-[10px] tracking-[0.2em] mt-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.mono }}>
                 {g.phone}
               </p>
               <p className="text-[10px] tracking-[0.3em] uppercase mt-1.5" style={{ color: MARBLE + "66", fontFamily: fontStack.body }}>
@@ -699,7 +700,7 @@ const GuestsScreen = ({ guests, onAdd }) => {
 
 const MembershipScreen = () => (
   <div className="px-6 pt-3 pb-32">
-    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
       Bona fides
     </p>
     <h1 className="text-4xl mt-2 leading-none" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
@@ -749,10 +750,10 @@ const MembershipScreen = () => (
       <div className="relative flex flex-col h-full justify-between p-6">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[8px] tracking-[0.5em] uppercase" style={{ color: GRAPHITE, fontFamily: fontStack.body, fontWeight: 500 }}>
+            <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: GRAPHITE, fontFamily: fontStack.body, fontWeight: 500 }}>
               The Oak Room
             </p>
-            <p className="text-[8px] tracking-[0.4em] uppercase mt-0.5" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
+            <p className="text-[10px] tracking-[0.4em] uppercase mt-0.5" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
               The Post Oak Hotel · Houston
             </p>
           </div>
@@ -778,7 +779,7 @@ const MembershipScreen = () => (
             <p className="text-[9px] tracking-[0.3em]" style={{ color: GRAPHITE, fontFamily: fontStack.mono }}>
               {MEMBER.cardCode}
             </p>
-            <p className="text-[8px] tracking-[0.4em] uppercase" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
+            <p className="text-[10px] tracking-[0.4em] uppercase" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
               Mem. {MEMBER.joined}
             </p>
           </div>
@@ -786,7 +787,7 @@ const MembershipScreen = () => (
       </div>
     </motion.div>
 
-    <p className="text-[10px] tracking-[0.3em] uppercase mt-3 text-center" style={{ color: VEIN, fontFamily: fontStack.body }}>
+    <p className="text-[10px] tracking-[0.3em] uppercase mt-3 text-center" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
       Tap the card at reception
     </p>
 
@@ -812,7 +813,7 @@ const MembershipScreen = () => (
     </div>
 
     <div className="mt-10 pt-6 text-center" style={{ borderTop: `1px solid ${VEIN}22` }}>
-      <p className="text-[8px] tracking-[0.6em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+      <p className="text-[10px] tracking-[0.6em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
         A Fertitta property
       </p>
       <p className="text-[10px] mt-2 italic" style={{ color: TEXT_DIM, fontFamily: fontStack.display }}>
@@ -824,7 +825,7 @@ const MembershipScreen = () => (
 
 const BillingScreen = () => (
   <div className="px-6 pt-3 pb-32">
-    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
       The ledger
     </p>
     <h1 className="text-4xl mt-2 leading-none" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
@@ -832,11 +833,11 @@ const BillingScreen = () => (
     </h1>
 
     <div className="mt-6 p-5 text-center" style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}55` }}>
-      <p className="text-[10px] tracking-[0.4em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+      <p className="text-[10px] tracking-[0.4em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
         Current balance · due May 31
       </p>
       <p className="text-5xl mt-2" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
-        $1,284<span style={{ color: VEIN, fontSize: 28 }}>.50</span>
+        $1,284<span style={{ color: VEIN_TEXT, fontSize: 28 }}>.50</span>
       </p>
       <div className="mt-4 flex gap-2 justify-center">
         <BrassButton>Settle now</BrassButton>
@@ -856,7 +857,7 @@ const BillingScreen = () => (
       ].map((t, i) => (
         <div key={i} className="flex justify-between items-baseline">
           <div>
-            <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
               {t.d}
             </p>
             <p className="text-sm mt-0.5" style={{ color: MARBLE, fontFamily: fontStack.display, fontStyle: t.credit ? "italic" : "normal" }}>
@@ -881,29 +882,12 @@ const BillingScreen = () => (
 
 const ReserveScreen = () => (
   <div className="px-6 pt-3 pb-32">
-    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
       A table, a corner, a room
     </p>
     <h1 className="text-4xl mt-2 leading-none" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
       <em style={{ color: COBALT }}>Reserve</em>
     </h1>
-
-    <div className="flex gap-2 mt-5 overflow-x-auto pb-2">
-      {["Tonight", "Tomorrow", "Fri", "Sat", "Sun"].map((d, i) => (
-        <button
-          key={d}
-          className="px-4 py-2.5 text-[10px] tracking-[0.3em] uppercase whitespace-nowrap"
-          style={{
-            color: i === 0 ? GRAPHITE : COBALT,
-            background: i === 0 ? COBALT : "transparent",
-            border: `1px solid ${VEIN}`,
-            fontFamily: fontStack.body,
-          }}
-        >
-          {d}
-        </button>
-      ))}
-    </div>
 
     <Divider label="Available · party of 2" />
 
@@ -913,7 +897,7 @@ const ReserveScreen = () => (
           <div className="flex justify-between items-baseline">
             <div>
               <h3 className="text-xl" style={{ fontFamily: fontStack.display, color: MARBLE }}>{r.room}</h3>
-              <p className="text-[10px] tracking-[0.2em] uppercase mt-1" style={{ color: VEIN, fontFamily: fontStack.body }}>
+              <p className="text-[10px] tracking-[0.2em] uppercase mt-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
                 {r.desc}
               </p>
             </div>
@@ -942,7 +926,7 @@ const ReserveScreen = () => (
 
 const RulesScreen = () => (
   <div className="px-6 pt-3 pb-32">
-    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
       Of conduct & comportment
     </p>
     <h1 className="text-4xl mt-2 leading-none" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
@@ -978,12 +962,12 @@ const RulesScreen = () => (
     <p className="text-sm leading-relaxed italic" style={{ color: MARBLE + "AA", fontFamily: fontStack.display }}>
       "Smart, considered, and your own. We trust your judgment more than a checklist — but if in doubt, err toward the jacket."
     </p>
-    <p className="text-[10px] tracking-[0.3em] uppercase mt-3" style={{ color: VEIN, fontFamily: fontStack.body }}>
+    <p className="text-[10px] tracking-[0.3em] uppercase mt-3" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
       — The Membership Committee
     </p>
 
     <div className="mt-10 pt-6 text-center" style={{ borderTop: `1px solid ${VEIN}22` }}>
-      <p className="text-[8px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+      <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
         RSVP & Concierge
       </p>
       <p className="text-base mt-2" style={{ color: MARBLE, fontFamily: fontStack.mono, letterSpacing: "0.1em" }}>
@@ -992,7 +976,7 @@ const RulesScreen = () => (
       <p className="text-[10px] mt-1" style={{ color: TEXT_DIM, fontFamily: fontStack.mono }}>
         Events@OakRoomHouston.com
       </p>
-      <p className="text-[10px] tracking-[0.3em] uppercase mt-3" style={{ color: VEIN, fontFamily: fontStack.body }}>
+      <p className="text-[10px] tracking-[0.3em] uppercase mt-3" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
         @TheOakRoomHouston
       </p>
     </div>
@@ -1025,18 +1009,24 @@ export default function ClubApp() {
   };
 
   const handleRSVP = (id) => {
+    let wasReserved = false;
     setEvents((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, rsvp: !e.rsvp } : e))
+      prev.map((e) => {
+        if (e.id === id) {
+          wasReserved = e.rsvp;
+          return { ...e, rsvp: !e.rsvp };
+        }
+        return e;
+      })
     );
-    const ev = events.find((e) => e.id === id);
-    showToast(ev.rsvp ? "Reservation released" : "Reserved · check Ledger");
+    showToast(wasReserved ? "Reservation released" : "Reserved · check Ledger");
   };
 
   const handleAddGuest = (name, phone) => {
     setGuests((prev) => [
       ...prev,
       {
-        id: Date.now(),
+        id: crypto.randomUUID(),
         name,
         phone,
         arriving: "Tonight · 11pm",
@@ -1058,9 +1048,6 @@ export default function ClubApp() {
         fontFamily: fontStack.body,
       }}
     >
-      {/* Google fonts */}
-      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter+Tight:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
-
       {/* Phone frame */}
       <div
         className="relative mx-auto"
@@ -1107,14 +1094,18 @@ export default function ClubApp() {
           {/* Title bar */}
           <div className="flex items-center justify-between px-6 pt-4 pb-3 flex-shrink-0" style={{ borderBottom: `1px solid ${VEIN}22` }}>
             <div>
-              <p className="text-[8px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+              <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
                 Member · {MEMBER.tier}
               </p>
               <p className="text-lg leading-none mt-1" style={{ fontFamily: fontStack.display, color: MARBLE, fontStyle: "italic" }}>
                 Oak Room Houston
               </p>
             </div>
-            <button className="relative" style={{ color: COBALT }}>
+            <button
+              className="relative"
+              style={{ color: COBALT }}
+              aria-label="Notifications, 1 unread"
+            >
               <Bell size={18} />
               <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: COBALT }} />
             </button>
@@ -1175,6 +1166,8 @@ export default function ClubApp() {
 
           {/* Tab bar */}
           <div
+            role="tablist"
+            aria-label="Oak Room navigation"
             className="flex-shrink-0 flex items-center justify-around px-2 pb-5 pt-3"
             style={{
               background: `linear-gradient(180deg, transparent, ${GRAPHITE} 30%)`,
@@ -1186,13 +1179,16 @@ export default function ClubApp() {
               return (
                 <button
                   key={id}
+                  role="tab"
+                  aria-selected={active}
+                  aria-label={label}
                   onClick={() => setTab(id)}
                   className="flex flex-col items-center gap-1 py-1 px-1 transition-all"
                   style={{ color: active ? COBALT : MARBLE + "55" }}
                 >
                   <Icon size={16} strokeWidth={active ? 2 : 1.5} />
                   <span
-                    className="text-[8px] tracking-[0.2em] uppercase"
+                    className="text-[10px] tracking-[0.2em] uppercase"
                     style={{ fontFamily: fontStack.body, fontWeight: active ? 500 : 300 }}
                   >
                     {label}
