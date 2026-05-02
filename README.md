@@ -1,12 +1,12 @@
 # Oak Room Houston — Members' App (v1.0.0)
 
-> Owner setup guide. Designed for Dustin's local Claude Code session — the operating instructions for getting this deployed and connected to a StackBlitz sandbox the collaborator can edit live.
+> Owner setup guide. Designed for the owner's local Claude Code session — the operating instructions for getting this deployed and connected to a Codespaces sandbox the collaborator can edit live.
 
 ---
 
 ## What this repo is
 
-A members' app for The Oak Room. Next.js + Tailwind + framer-motion, deployed to Vercel. Editable live in a browser via StackBlitz (collaborator) or locally via Claude Code (you).
+A members' app for The Oak Room. Next.js + Tailwind + framer-motion, deployed to Vercel. Editable live in a browser via GitHub Codespaces (collaborator) or locally via Claude Code (you).
 
 ## The architecture you're setting up
 
@@ -15,7 +15,7 @@ Two URLs, two branches, one promote button:
 | | Branch | URL | Who pushes here |
 |---|---|---|---|
 | **Production** | `main` | `oak-room.vercel.app` (or your custom domain) | Owner only, via promote action |
-| **Sandbox** | `sandbox` | `oak-room-git-sandbox-USER.vercel.app` | Collaborator (via StackBlitz) and owner |
+| **Sandbox** | `sandbox` | `oak-room-app-git-sandbox-USER.vercel.app` | Collaborator (via Codespaces) and owner |
 
 Both are Vercel deploys of the same repo, configured to deploy different branches. Collaborator edits sandbox, you click "Promote" in GitHub Actions when ready, sandbox merges to main, production deploys.
 
@@ -71,21 +71,23 @@ vercel ls --scope=YOUR_VERCEL_USERNAME
 
 It'll look like `oak-room-app-git-sandbox-<username>.vercel.app`. Save this URL — you'll give it to the collaborator.
 
-### Step 4 — Set up the StackBlitz link
+### Step 4 — Set up the Codespaces link
 
-StackBlitz can fork any public GitHub repo into a live editor. The link format is:
+GitHub Codespaces opens any repo as a full Linux container with VS Code in the browser. The repo's `.devcontainer/devcontainer.json` auto-installs npm deps and Claude Code on first launch. The launch link format is:
 
 ```
-https://stackblitz.com/github/YOUR_USERNAME/oak-room-app/tree/sandbox
+https://github.com/codespaces/new?repo=YOUR_USERNAME/oak-room-app&ref=sandbox
 ```
 
-The `/tree/sandbox` part is critical — it tells StackBlitz to open the sandbox branch, not main. Save this URL — you'll give it to the collaborator.
+The `&ref=sandbox` part is critical — it tells Codespaces to open the sandbox branch, not main. Save this URL — you'll give it to the collaborator.
 
-When the collaborator opens this link, they get a forked StackBlitz project that:
-- Auto-runs `npm install`
-- Auto-starts `npm run dev`
-- Shows them the live preview side-by-side with the code
-- Has a terminal where they can run `npx @anthropic-ai/claude-code`
+When the collaborator opens this link, they get a Codespace that:
+- Boots a real Ubuntu container (~1 minute first time, seconds after)
+- Auto-runs `npm install` and installs `@anthropic-ai/claude-code` globally
+- Forwards port 3000 with auto-open preview once they run `npm run dev`
+- Has a terminal where they run `claude` to start Claude Code
+
+**Note:** the collaborator must add `ANTHROPIC_API_KEY` as a Codespaces secret at [github.com/settings/codespaces](https://github.com/settings/codespaces) and grant `oak-room-app` access. Walk them through it from `COLLABORATOR-GUIDE.md` if needed.
 
 ### Step 5 — Add the collaborator to the GitHub repo
 
@@ -169,11 +171,11 @@ This reverts the last commit on `main`, pushes, and Vercel re-deploys the previo
 
 Send them three things:
 
-1. **The StackBlitz link:** `https://stackblitz.com/github/YOUR_USERNAME/oak-room-app/tree/sandbox`
+1. **The Codespaces link:** `https://github.com/codespaces/new?repo=YOUR_USERNAME/oak-room-app&ref=sandbox`
 2. **The sandbox preview URL:** so they can see their changes live (`oak-room-app-git-sandbox-<USER>.vercel.app`)
 3. **The collaborator guide:** point them to `COLLABORATOR-GUIDE.md` in the repo, or send the file directly
 
-That's it. They click the StackBlitz link, follow the guide, edit, save → sandbox URL updates → they message you → you click promote → live.
+That's it. They click the Codespaces link, follow the guide, edit, save → sandbox URL updates → they message you → you click promote → live.
 
 ---
 
@@ -184,7 +186,7 @@ That's it. They click the StackBlitz link, follow the guide, edit, save → sand
 | `CLAUDE.md` | Orientation file Claude Code reads on every session — works for both collaborator and owner contexts |
 | `COLLABORATOR-GUIDE.md` | What you send the collaborator |
 | `README.md` | This file |
-| `.stackblitzrc` | Tells StackBlitz how to open this project (auto-install, auto-start dev server) |
+| `.devcontainer/devcontainer.json` | Tells Codespaces how to open this project (Node 20, auto-install deps + Claude Code, forward port 3000) |
 | `.github/workflows/promote.yml` | The "publish to production" button |
 | `.github/workflows/revert.yml` | The "rollback production" button |
 | `components/ClubApp.jsx` | The whole app — events, guests, member, ledger, etc. |
@@ -197,7 +199,7 @@ That's it. They click the StackBlitz link, follow the guide, edit, save → sand
 | Service | Free tier covers | When you'd pay |
 |---|---|---|
 | **Vercel** | Unlimited prototypes, custom domain, 100GB bandwidth | Bandwidth-heavy production traffic |
-| **StackBlitz** | Public projects, basic editor | $9/mo for private projects (likely not needed for this) |
+| **Codespaces** | 60 core-hours/month per user (free tier) | ~$0.18/core-hour past the free tier — light editing usage stays within free tier |
 | **GitHub** | Unlimited private repos | Not relevant here |
 | **Anthropic API** | Pay-as-you-go from $5 minimum | ~$5–10/mo for light editing usage |
 

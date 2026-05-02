@@ -6,13 +6,9 @@
 
 ## The setup (one time only)
 
-Before your first edit, do these three small things:
+Before your first edit, do these two small things:
 
-### 1. Get a free StackBlitz account
-
-Sign up at [stackblitz.com](https://stackblitz.com). Use your GitHub account to sign in — that's the easiest path. Tell the owner your StackBlitz/GitHub username so they can give you access to the sandbox.
-
-### 2. Get an Anthropic API key
+### 1. Get an Anthropic API key
 
 This is what powers Claude. Two ways:
 
@@ -21,41 +17,54 @@ This is what powers Claude. Two ways:
 
 Either way, copy the key — it'll start with `sk-ant-`.
 
-### 3. Save the key in StackBlitz
+### 2. Save the key as a Codespaces secret
 
-In StackBlitz, click your avatar → Settings → Environment variables → Add new:
+In your browser, go to [github.com/settings/codespaces](https://github.com/settings/codespaces).
+
+Under **Codespaces secrets**, click **New secret**:
 - Name: `ANTHROPIC_API_KEY`
 - Value: paste the key
+- Repository access: select `oak-room-app`
 - Save
 
-Done forever.
+Done forever. Every Codespace you open will have this available.
 
 ---
 
 ## How to make an edit (every single time)
 
-### Step 1 — Open the sandbox
+### Step 1 — Open the Codespace
 
-Click the link the owner sent you. (It looks like `stackblitz.com/edit/oak-room-sandbox` or similar.)
+Click the link the owner sent you. (It looks like `github.com/codespaces/new?repo=...&ref=sandbox`.)
 
-After about 5 seconds you'll see:
+After about a minute (first time) or a few seconds (after that), you'll see:
 - **Code** on the left (the project files)
-- **Live preview of the app** on the right
 - **A terminal** at the bottom
+- A **Ports** tab in the bottom panel — that's where the live preview will appear
 
-### Step 2 — Open a Claude terminal
+### Step 2 — Start the live preview
 
-Click the **"+"** button on the terminal tabs to open a new terminal pane. In it, type:
+In the terminal, type:
 
 ```bash
-npx @anthropic-ai/claude-code
+npm run dev
 ```
 
-(First time, it'll install Claude Code — takes about 30 seconds. After that, instant.)
+After a moment, a **"Open in Browser"** popup will appear, or you can click the **Ports** tab → globe icon next to port `3000`. The live preview opens in a new tab. Keep it side-by-side with the Codespace tab.
+
+### Step 3 — Open a Claude terminal
+
+Click the **`+`** button on the terminal tabs to open a second terminal. (Leave the first one running the dev server.)
+
+In the new terminal, type:
+
+```bash
+claude
+```
 
 You're now chatting with Claude. It already knows everything about your project — it reads `CLAUDE.md` automatically.
 
-### Step 3 — Tell Claude what you want
+### Step 4 — Tell Claude what you want
 
 Just describe it in plain English:
 
@@ -67,9 +76,9 @@ Just describe it in plain English:
 
 Claude finds the right place, makes the change, and tells you what was edited.
 
-### Step 4 — Watch the preview update
+### Step 5 — Watch the preview update
 
-The live preview on the right refreshes automatically within 1–2 seconds of any save. Click around. Make sure it looks right.
+The live preview tab refreshes automatically within 1–2 seconds of any save. Click around. Make sure it looks right.
 
 If it's not quite right, just tell Claude:
 - *"The title is too long, shorten it"*
@@ -78,7 +87,7 @@ If it's not quite right, just tell Claude:
 
 Each fix shows up live in seconds.
 
-### Step 5 — Save it to the sandbox
+### Step 6 — Save it to the sandbox
 
 When you're happy, tell Claude:
 
@@ -88,7 +97,7 @@ Claude will commit and push to the sandbox. Within about a minute, the **sandbox
 
 **The sandbox URL is not the production URL.** Members don't see your changes yet. They go live when the owner clicks "publish."
 
-### Step 6 — Tell the owner
+### Step 7 — Tell the owner
 
 Just send them a message: *"Sandbox is ready — added the May 18 event. Take a look?"*
 
@@ -133,19 +142,21 @@ When in doubt, ask Claude: *"Is this a safe change to make on my own, or should 
 
 ## When something goes wrong
 
-- **The live preview is blank.** Wait another 10 seconds — first load can be slow. Still blank? Tell Claude: *"the preview isn't showing — please restart the dev server."*
+- **The live preview is blank.** Wait another 10 seconds — the dev server can be slow to start. Still blank? In the terminal, press `Ctrl+C` then run `npm run dev` again.
 
 - **Claude says "build failed."** Don't save it to the sandbox. Tell the owner what you were trying to do and paste the error message. **Don't try to fix it harder** — that's how things get worse.
 
-- **You closed the tab and your changes are gone.** They're not — StackBlitz auto-saves. Re-open the link, your work in progress is still there.
+- **Codespace shut down or you closed the tab.** Codespaces auto-pause after 30 minutes of inactivity, but everything is saved. Re-open the link or go to [github.com/codespaces](https://github.com/codespaces) and click your existing one to resume.
 
-- **Claude Code keeps asking for an API key.** The environment variable didn't save. Go to Settings → Environment variables, re-add `ANTHROPIC_API_KEY`, refresh the page.
+- **Claude Code keeps asking for an API key.** The Codespaces secret didn't save or wasn't scoped to this repo. Go to [github.com/settings/codespaces](https://github.com/settings/codespaces), check that `ANTHROPIC_API_KEY` exists and `oak-room-app` is in its repository access list. Then close and re-open the Codespace.
 
 ---
 
 ## When you're done
 
-Just close the tab. Everything auto-saved. The sandbox state is exactly where you left it next time you open the link.
+Just close the tab. Everything auto-saves. The Codespace stays paused until you re-open the link, then resumes where you left off.
+
+Codespaces include 60 free hours per month — more than enough for content edits. After that, it's a few cents per hour. The owner can also stop a running Codespace from [github.com/codespaces](https://github.com/codespaces) if you forget to close it.
 
 If you started something and didn't finish, tell Claude: *"Save my changes as a draft."* It's saved.
 
