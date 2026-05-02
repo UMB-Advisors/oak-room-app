@@ -1183,7 +1183,10 @@ export default function ClubApp() {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center p-4"
+      // Desktop: cobalt-glow background + flex-center the phone-frame mockup.
+      // Mobile / PWA standalone: outer wrapper just fills the viewport so the
+      // inner div can go edge-to-edge under the real iOS status bar.
+      className="min-h-screen w-full md:flex md:items-center md:justify-center md:p-4"
       style={{
         background: `
           radial-gradient(ellipse 80% 50% at 50% 0%, ${COBALT}18 0%, transparent 50%),
@@ -1192,33 +1195,40 @@ export default function ClubApp() {
         fontFamily: fontStack.body,
       }}
     >
-      {/* Phone frame */}
+      {/* Phone frame — chrome only on desktop. Mobile goes edge-to-edge. */}
       <div
-        className="relative mx-auto"
+        className="relative w-full h-screen md:h-[min(880px,95vh)] md:w-[min(420px,100%)] md:mx-auto md:rounded-[44px] md:p-3 md:border"
         style={{
-          width: "min(420px, 100%)",
-          height: "min(880px, 95vh)",
           background: GRAPHITE,
-          borderRadius: 44,
-          padding: 12,
-          boxShadow: `
-            0 0 0 2px ${VEIN}44,
-            0 40px 80px -20px ${COBALT}22,
-            0 0 100px -20px ${COBALT}11
-          `,
-          border: `1px solid ${VEIN}66`,
+          // Inline styles only kick in on md+ via Tailwind class composition.
+          // Mobile gets none of these (no border, no shadow, no rounding).
         }}
       >
+        {/* Apply the desktop-only frame chrome via a sibling overlay.
+            Done as an absolutely-positioned div so we can hide it cleanly on mobile. */}
+        <div
+          className="hidden md:block absolute inset-0 pointer-events-none rounded-[44px]"
+          style={{
+            boxShadow: `
+              0 0 0 2px ${VEIN}44,
+              0 40px 80px -20px ${COBALT}22,
+              0 0 100px -20px ${COBALT}11
+            `,
+            border: `1px solid ${VEIN}66`,
+          }}
+        />
+
         {/* Screen */}
         <div
-          className="relative w-full h-full overflow-hidden flex flex-col"
+          className="relative w-full h-full overflow-hidden flex flex-col md:rounded-[32px]"
           style={{
             background: GRAPHITE,
-            borderRadius: 32,
           }}
         >
-          {/* Status bar / header */}
-          <div className="flex items-center justify-between px-6 pt-4 pb-2 flex-shrink-0">
+          {/* Fake status bar — only on desktop preview where there's no real one.
+              On mobile/PWA the real iOS status bar shows through (theme_color is
+              graphite to match). */}
+          <div className="hidden md:flex items-center justify-between px-6 pt-4 pb-2 flex-shrink-0">
             <span className="text-[10px] tracking-[0.2em]" style={{ color: MARBLE + "88", fontFamily: fontStack.mono }}>
               11:42
             </span>
@@ -1234,6 +1244,10 @@ export default function ClubApp() {
               </div>
             </div>
           </div>
+
+          {/* Safe-area padding for PWA standalone — content doesn't slide under
+              the iPhone notch. Only applies on mobile. */}
+          <div className="md:hidden flex-shrink-0" style={{ paddingTop: "env(safe-area-inset-top)" }} />
 
           {/* Title bar */}
           <div className="flex items-center justify-between px-6 pt-4 pb-3 flex-shrink-0" style={{ borderBottom: `1px solid ${VEIN}22` }}>
@@ -1310,11 +1324,14 @@ export default function ClubApp() {
           <div
             role="tablist"
             aria-label="Oak Room navigation"
-            className="flex-shrink-0 grid items-end px-3 pb-5 pt-3"
+            className="flex-shrink-0 grid items-end px-3 pt-3"
             style={{
               gridTemplateColumns: "1fr 1fr auto 1fr 1fr",
               background: `linear-gradient(180deg, transparent, ${GRAPHITE} 30%)`,
               borderTop: `1px solid ${VEIN}33`,
+              // Pad above the iPhone home indicator on standalone PWA.
+              // env() resolves to 0 on desktop / non-PWA, so this is safe everywhere.
+              paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))",
             }}
           >
             {TABS.slice(0, 2).map((t) => (
