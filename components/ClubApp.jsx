@@ -699,7 +699,7 @@ const GuestsScreen = ({ guests, onAdd }) => {
   );
 };
 
-const MembershipScreen = () => (
+const MembershipScreen = ({ guests = [] }) => (
   <div className="px-6 pt-3 pb-32">
     <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
       Bona fides
@@ -831,29 +831,51 @@ const MembershipScreen = () => (
       ))}
     </div>
 
-    <div className="mt-10 pt-6 text-center" style={{ borderTop: `1px solid ${VEIN}22` }}>
-      <p className="text-[10px] tracking-[0.6em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-        A Fertitta property
-      </p>
-      <p className="text-[10px] mt-2 italic" style={{ color: TEXT_DIM, fontFamily: fontStack.display }}>
-        Owned & operated by the Fertitta family
-      </p>
-    </div>
-  </div>
-);
+    <Divider label="Your guests this month" />
 
-const BillingScreen = () => (
-  <div className="px-6 pt-3 pb-32">
-    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-      The ledger
-    </p>
-    <h1 className="text-4xl mt-2 leading-none" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
-      Your <em style={{ color: COBALT }}>account</em>
-    </h1>
+    {guests.length === 0 ? (
+      <p className="text-sm italic" style={{ color: MARBLE + "88", fontFamily: fontStack.display }}>
+        No invites yet this month.
+      </p>
+    ) : (
+      <div className="space-y-2.5">
+        {guests.slice(0, 3).map((g) => {
+          const isConfirmed = g.status === "Confirmed";
+          const isPending = g.status === "Pending";
+          const accent = isConfirmed ? COBALT : isPending ? "#C04A4A" : VEIN_TEXT;
+          return (
+            <div
+              key={g.id}
+              className="flex items-center justify-between py-2 px-3"
+              style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}33` }}
+            >
+              <div className="min-w-0">
+                <p className="text-sm truncate" style={{ color: MARBLE, fontFamily: fontStack.display }}>
+                  {g.name}
+                </p>
+                <p className="text-[10px] tracking-[0.2em] uppercase mt-0.5" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+                  {g.arriving}
+                </p>
+              </div>
+              <span
+                className="text-[10px] tracking-[0.3em] uppercase px-2 py-1 flex items-center gap-1 flex-shrink-0"
+                style={{ color: accent, border: `1px solid ${accent}`, fontFamily: fontStack.body }}
+              >
+                {isConfirmed && <Check size={10} />}
+                {!isConfirmed && !isPending && <Send size={10} />}
+                {g.status}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    )}
 
-    <div className="mt-6 p-5 text-center" style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}55` }}>
+    <Divider label="The ledger · due May 31" />
+
+    <div className="p-5 text-center" style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}55` }}>
       <p className="text-[10px] tracking-[0.4em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-        Current balance · due May 31
+        Current balance
       </p>
       <p className="text-5xl mt-2" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
         $1,284<span style={{ color: VEIN_TEXT, fontSize: 28 }}>.50</span>
@@ -864,9 +886,7 @@ const BillingScreen = () => (
       </div>
     </div>
 
-    <Divider label="Recent" />
-
-    <div className="space-y-4">
+    <div className="mt-5 space-y-3.5">
       {[
         { d: "Apr 28", what: "Mastro's · party of 4", amt: "428.00" },
         { d: "Apr 24", what: "Post Oak Saloon · bar tab", amt: "186.50" },
@@ -895,6 +915,15 @@ const BillingScreen = () => (
           </span>
         </div>
       ))}
+    </div>
+
+    <div className="mt-10 pt-6 text-center" style={{ borderTop: `1px solid ${VEIN}22` }}>
+      <p className="text-[10px] tracking-[0.6em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+        A Fertitta property
+      </p>
+      <p className="text-[10px] mt-2 italic" style={{ color: TEXT_DIM, fontFamily: fontStack.display }}>
+        Owned & operated by the Fertitta family
+      </p>
     </div>
   </div>
 );
