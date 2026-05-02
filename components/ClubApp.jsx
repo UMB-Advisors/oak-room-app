@@ -717,74 +717,89 @@ const MembershipScreen = () => (
       transition={{ duration: 0.6 }}
       className="relative aspect-[1.586/1] overflow-hidden"
       style={{
-        background: `
-          linear-gradient(135deg, ${MARBLE} 0%, ${MARBLE_2} 100%)
-        `,
+        background: `linear-gradient(160deg, #d8d8d8 0%, #b4b4b4 20%, #cecece 40%, #a8a8a8 60%, #c4c4c4 80%, #d0d0d0 100%)`,
         boxShadow: `
-          0 30px 60px -30px rgba(0,0,0,0.6),
-          0 0 0 1px rgba(0,0,0,0.08),
-          inset 0 1px 0 rgba(255,255,255,0.6)
+          0 30px 60px -30px rgba(0,0,0,0.65),
+          0 0 0 1px rgba(0,0,0,0.18),
+          inset 0 1px 0 rgba(255,255,255,0.45)
         `,
       }}
     >
-      {/* marble veining — soft diagonal striations */}
-      <svg className="absolute inset-0 w-full h-full opacity-40 pointer-events-none" preserveAspectRatio="none" viewBox="0 0 400 252">
+      {/* Brushed metal texture */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 400 252">
         <defs>
-          <filter id="marbleBlur"><feGaussianBlur stdDeviation="1.2" /></filter>
+          <linearGradient id="brushSheen" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stopColor="white" stopOpacity="0.25"/>
+            <stop offset="35%"  stopColor="white" stopOpacity="0.04"/>
+            <stop offset="55%"  stopColor="white" stopOpacity="0.14"/>
+            <stop offset="75%"  stopColor="black" stopOpacity="0.06"/>
+            <stop offset="100%" stopColor="white" stopOpacity="0.08"/>
+          </linearGradient>
         </defs>
-        <g filter="url(#marbleBlur)" stroke={VEIN} fill="none" strokeWidth="0.6" opacity="0.5">
-          <path d="M -20 60 Q 100 40 220 90 T 420 70" />
-          <path d="M -20 130 Q 80 160 200 140 T 420 170" strokeWidth="0.4" />
-          <path d="M 30 -10 Q 80 80 160 120 T 280 250" strokeWidth="0.3" />
-          <path d="M 200 -10 Q 240 60 280 100 T 380 260" strokeWidth="0.4" />
-        </g>
-        <g stroke={VEIN} fill="none" strokeWidth="0.3" opacity="0.3">
-          <path d="M 0 50 Q 100 55 200 50 T 400 60" />
-          <path d="M 0 200 Q 100 195 200 200 T 400 195" />
+        <rect width="400" height="252" fill="url(#brushSheen)"/>
+        {Array.from({ length: 84 }).map((_, i) => (
+          <line
+            key={i}
+            x1="0" y1={i * 3} x2="400" y2={i * 3}
+            stroke="white"
+            strokeWidth={i % 7 === 0 ? "0.8" : "0.3"}
+            opacity={i % 7 === 0 ? "0.18" : "0.06"}
+          />
+        ))}
+      </svg>
+
+      {/* Oak tree silhouette */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        viewBox="0 0 400 252"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g fill="#1a1a1a" opacity="0.42">
+          {/* Trunk */}
+          <path d="M188,252 L188,148 Q194,140 200,142 Q206,140 212,148 L212,252 Z"/>
+          {/* Root flare */}
+          <ellipse cx="200" cy="250" rx="26" ry="6"/>
+          {/* Main canopy — overlapping organic clusters */}
+          <ellipse cx="200" cy="82"  rx="88"  ry="72"/>
+          <ellipse cx="115" cy="105" rx="68"  ry="52"/>
+          <ellipse cx="285" cy="100" rx="72"  ry="56"/>
+          <ellipse cx="160" cy="50"  rx="58"  ry="46"/>
+          <ellipse cx="242" cy="46"  rx="62"  ry="48"/>
+          <ellipse cx="72"  cy="128" rx="52"  ry="40"/>
+          <ellipse cx="328" cy="120" rx="55"  ry="43"/>
+          <ellipse cx="200" cy="36"  rx="48"  ry="40"/>
+          <ellipse cx="345" cy="148" rx="42"  ry="33"/>
+          <ellipse cx="55"  cy="148" rx="44"  ry="34"/>
+          <ellipse cx="130" cy="142" rx="42"  ry="30"/>
+          <ellipse cx="270" cy="138" rx="44"  ry="32"/>
+          <ellipse cx="20"  cy="152" rx="30"  ry="24"/>
+          <ellipse cx="380" cy="145" rx="28"  ry="22"/>
         </g>
       </svg>
 
-      {/* cobalt edge inlay — top + bottom hairlines */}
-      <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: COBALT }} />
-      <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: COBALT }} />
-
-      <div className="relative flex flex-col h-full justify-between p-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[8px] tracking-[0.5em] uppercase" style={{ color: GRAPHITE, fontFamily: fontStack.body, fontWeight: 500 }}>
-              The Oak Room
-            </p>
-            <p className="text-[8px] tracking-[0.4em] uppercase mt-0.5" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
-              The Post Oak Hotel · Houston
-            </p>
-          </div>
-          <div
-            className="w-9 h-9 flex items-center justify-center"
-            style={{ background: COBALT, color: MARBLE, fontFamily: fontStack.display, fontSize: 20, fontStyle: "italic" }}
-          >
-            O
-          </div>
-        </div>
-
-        <div>
-          <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: COBALT, fontFamily: fontStack.body, fontWeight: 500 }}>
-            {MEMBER.tier} · {MEMBER.memberNo}
+      {/* Branding box — centered, matching physical card */}
+      <div className="absolute inset-0 flex items-center" style={{ paddingLeft: "10%" }}>
+        <div style={{ border: "1px solid rgba(12,12,12,0.55)", padding: "12px 20px", minWidth: 140 }}>
+          <p style={{ fontFamily: fontStack.display, fontStyle: "italic", fontSize: 13, color: "#111", lineHeight: 1.3, marginBottom: 1 }}>
+            The
           </p>
-          <p
-            className="text-2xl mt-1"
-            style={{ fontFamily: fontStack.display, color: GRAPHITE, fontWeight: 400, letterSpacing: "-0.01em" }}
-          >
-            {MEMBER.name}
+          <p style={{ fontFamily: fontStack.display, fontSize: 24, fontWeight: 400, color: "#111", letterSpacing: "0.07em", lineHeight: 1.1 }}>
+            OAK ROOM
           </p>
-          <div className="flex items-end justify-between mt-3">
-            <p className="text-[9px] tracking-[0.3em]" style={{ color: GRAPHITE, fontFamily: fontStack.mono }}>
-              {MEMBER.cardCode}
-            </p>
-            <p className="text-[8px] tracking-[0.4em] uppercase" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
-              Mem. {MEMBER.joined}
-            </p>
-          </div>
+          <p style={{ fontFamily: fontStack.body, fontSize: 8.5, letterSpacing: "0.42em", color: "#222", marginTop: 5 }}>
+            PRIVATE
+          </p>
         </div>
+      </div>
+
+      {/* Member details — bottom right, discreet */}
+      <div className="absolute bottom-4 right-5 text-right">
+        <p style={{ fontFamily: fontStack.body, fontSize: 8, letterSpacing: "0.25em", color: "#1a1a1a", opacity: 0.65, textTransform: "uppercase" }}>
+          {MEMBER.name}
+        </p>
+        <p style={{ fontFamily: fontStack.mono, fontSize: 8, letterSpacing: "0.25em", color: "#1a1a1a", opacity: 0.5, marginTop: 2 }}>
+          {MEMBER.cardCode}
+        </p>
       </div>
     </motion.div>
 
