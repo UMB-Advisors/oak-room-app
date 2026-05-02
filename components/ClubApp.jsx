@@ -701,6 +701,129 @@ const GuestsScreen = ({ guests, onAdd }) => {
   );
 };
 
+// Hand-crafted QR-like SVG. Has the three real corner finder patterns so it
+// reads as "QR code" at a glance; remaining modules are deterministic noise.
+// Not a scannable QR — the real .pkpass (Workstream G) has the working code.
+const QrPlaceholder = ({ size = 84 }) => {
+  const cells = 21;
+  const cell = size / cells;
+  const inFinder = (r, c, rOff, cOff) => r >= rOff && r < rOff + 7 && c >= cOff && c < cOff + 7;
+  const isFinderCell = (r, c) =>
+    inFinder(r, c, 0, 0) || inFinder(r, c, 0, cells - 7) || inFinder(r, c, cells - 7, 0);
+  const finderModule = (r, c) => {
+    let lr, lc;
+    if (r < 7 && c < 7) { lr = r; lc = c; }
+    else if (r < 7) { lr = r; lc = c - (cells - 7); }
+    else { lr = r - (cells - 7); lc = c; }
+    if (lr === 0 || lr === 6 || lc === 0 || lc === 6) return true;
+    if (lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4) return true;
+    return false;
+  };
+  const rects = [];
+  for (let r = 0; r < cells; r++) {
+    for (let c = 0; c < cells; c++) {
+      let on = false;
+      if (isFinderCell(r, c)) on = finderModule(r, c);
+      else on = (r * 31 + c * 17 + 7) % 100 < 46;
+      if (on) rects.push(<rect key={`${r}-${c}`} x={c * cell} y={r * cell} width={cell} height={cell} fill="#1a1a1a" />);
+    }
+  }
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
+      {rects}
+    </svg>
+  );
+};
+
+// Apple Wallet pass face — rendered inline on the Member tab. Visual mockup
+// of what the real signed .pkpass (Workstream G) looks like once added to
+// Apple Wallet. Colors match scripts/pass-template/pass.json so the in-app
+// preview matches what shows up in Wallet after "Add to Apple Wallet."
+const WalletPassFace = () => (
+  <div
+    className="relative overflow-hidden mx-auto"
+    style={{
+      aspectRatio: "5 / 8",
+      maxWidth: 260,
+      background: GRAPHITE,
+      borderRadius: 18,
+      color: MARBLE,
+      boxShadow: `
+        0 30px 60px -30px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(255,255,255,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.12)
+      `,
+    }}
+  >
+    {/* Top — header + NFC waves */}
+    <div className="px-5 pt-5 flex items-start justify-between">
+      <div>
+        <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: COBALT, fontWeight: 500 }}>
+          The Oak Room
+        </p>
+        <p className="text-[10px] mt-1 italic" style={{ fontFamily: fontStack.display, color: MARBLE + "AA" }}>
+          The Post Oak Hotel · Houston
+        </p>
+      </div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" style={{ color: MARBLE + "99" }} aria-hidden="true">
+        <path d="M6 6 Q 13 12 6 18" />
+        <path d="M10 6 Q 17 12 10 18" />
+        <path d="M14 6 Q 21 12 14 18" />
+      </svg>
+    </div>
+
+    {/* Primary field — Member name */}
+    <div className="px-5 mt-7">
+      <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: COBALT, fontWeight: 500 }}>
+        Member
+      </p>
+      <p className="text-2xl mt-1 leading-tight" style={{ fontFamily: fontStack.display, fontWeight: 400, letterSpacing: "-0.01em", color: MARBLE }}>
+        {MEMBER.name}
+      </p>
+    </div>
+
+    {/* Secondary fields */}
+    <div className="px-5 mt-5 flex gap-7">
+      <div>
+        <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: COBALT, fontWeight: 500 }}>
+          Tier
+        </p>
+        <p className="text-base mt-1 italic" style={{ fontFamily: fontStack.display, color: MARBLE }}>
+          {MEMBER.tier}
+        </p>
+      </div>
+      <div>
+        <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: COBALT, fontWeight: 500 }}>
+          No.
+        </p>
+        <p className="text-base mt-1 italic" style={{ fontFamily: fontStack.display, color: MARBLE }}>
+          {MEMBER.memberNo}
+        </p>
+      </div>
+    </div>
+
+    {/* Auxiliary — member since */}
+    <div className="px-5 mt-4">
+      <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: COBALT, fontWeight: 500 }}>
+        Member Since
+      </p>
+      <p className="text-sm mt-1 italic" style={{ fontFamily: fontStack.display, color: MARBLE + "DD" }}>
+        {MEMBER.joined}
+      </p>
+    </div>
+
+    {/* Barcode strip — white, like Apple Wallet */}
+    <div className="absolute bottom-0 left-0 right-0 px-5 pt-3 pb-3 text-center" style={{ background: "#FFFFFF" }}>
+      <div className="flex justify-center">
+        <QrPlaceholder size={84} />
+      </div>
+      <p className="mt-1.5" style={{ fontFamily: fontStack.mono, fontSize: 9, letterSpacing: "0.18em", color: "#666" }}>
+        {MEMBER.cardCode}
+      </p>
+    </div>
+  </div>
+);
+
 const MembershipScreen = ({ guests = [] }) => (
   <div className="px-6 pt-3 pb-32">
     <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
@@ -808,6 +931,10 @@ const MembershipScreen = ({ guests = [] }) => (
     <p className="text-[10px] tracking-[0.3em] uppercase mt-3 text-center" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
       Tap the card at reception
     </p>
+
+    <Divider label="Or carry it on your iPhone" />
+
+    <WalletPassFace />
 
     <a
       href="/api/wallet-pass"
