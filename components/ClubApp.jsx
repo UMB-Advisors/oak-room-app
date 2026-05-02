@@ -14,6 +14,7 @@ import {
   Send,
   Wine,
   Users,
+  Sparkles,
 } from "lucide-react";
 
 // ───────────────────────────────────────────────────────────────────
@@ -185,6 +186,208 @@ const BrassButton = ({ children, onClick, variant = "solid", className = "" }) =
 };
 
 // ─── Screens ───────────────────────────────────────────────────────
+
+const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
+  const firstName = MEMBER.name.split(" ")[0];
+
+  // Hand-curated picks with rationale — feels staff-selected, not algorithmic
+  const PICKS = [
+    { id: 1, why: "A favorite vintage. A half-bottle is set aside." },
+    { id: 5, why: "Last year's Crown Royal flight stayed with you." },
+  ];
+  const curated = PICKS
+    .map((p) => ({ ...events.find((e) => e.id === p.id), why: p.why }))
+    .filter((e) => e.id);
+
+  const [note, setNote] = useState("");
+  const submitNote = () => {
+    if (!note.trim()) return;
+    onConcierge(note);
+    setNote("");
+  };
+
+  const chips = ["Reserve the Saloon", "Add a guest tonight", "Recommend a wine"];
+
+  return (
+    <div className="px-5 pt-3 pb-32">
+      <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+        For you
+      </p>
+      <h1
+        className="text-4xl mt-2 leading-none"
+        style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400, letterSpacing: "-0.01em" }}
+      >
+        A quiet <em style={{ color: COBALT }}>welcome</em>
+      </h1>
+
+      {/* Note from the club */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative mt-5 p-5 overflow-hidden"
+        style={{
+          background: `linear-gradient(160deg, ${GRAPHITE_2} 0%, ${GRAPHITE} 100%)`,
+          border: `1px solid ${COBALT}55`,
+        }}
+      >
+        <span className="absolute top-0 left-0 w-2.5 h-2.5 border-t border-l" style={{ borderColor: COBALT }} />
+        <span className="absolute top-0 right-0 w-2.5 h-2.5 border-t border-r" style={{ borderColor: COBALT }} />
+        <span className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b border-l" style={{ borderColor: COBALT }} />
+        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r" style={{ borderColor: COBALT }} />
+
+        <p className="text-[9px] tracking-[0.4em] uppercase" style={{ color: COBALT, fontFamily: fontStack.body, fontWeight: 500 }}>
+          A note from the club
+        </p>
+        <p
+          className="mt-3 text-base italic leading-relaxed"
+          style={{ color: MARBLE + "EE", fontFamily: fontStack.display }}
+        >
+          {firstName} — the sommelier set aside a half-bottle of the '22 Tres Colline Pinot for Thursday's wine night. We'll have it waiting.
+        </p>
+        <p className="mt-4 text-right text-[10px] tracking-[0.3em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+          — Eli, head sommelier
+        </p>
+      </motion.div>
+
+      <Divider label="Curated for you" />
+
+      <div className="space-y-2.5">
+        {curated.map((e, i) => (
+          <motion.button
+            key={e.id}
+            onClick={() => onRSVP(e.id)}
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.05 * i, duration: 0.4 }}
+            whileTap={{ scale: 0.99 }}
+            className="relative w-full text-left p-4 overflow-hidden"
+            style={{
+              background: GRAPHITE_2,
+              border: `1px solid ${VEIN}33`,
+            }}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-[8px] tracking-[0.3em]" style={{ color: COBALT, fontFamily: fontStack.body, fontWeight: 500 }}>
+                  {e.date} · {e.time}
+                </p>
+                <h3
+                  className="text-lg leading-tight mt-1"
+                  style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}
+                >
+                  {e.title}
+                </h3>
+                <p
+                  className="text-[11px] italic leading-snug mt-1.5"
+                  style={{ color: MARBLE + "AA", fontFamily: fontStack.display }}
+                >
+                  {e.why}
+                </p>
+              </div>
+              <span
+                className="text-[9px] tracking-[0.3em] uppercase px-2 py-1 flex-shrink-0 flex items-center gap-1"
+                style={{
+                  color: e.rsvp ? COBALT : MARBLE + "AA",
+                  border: `1px solid ${e.rsvp ? COBALT : VEIN}`,
+                  fontFamily: fontStack.body,
+                }}
+              >
+                {e.rsvp && <Check size={10} />}
+                {e.rsvp ? "Held" : "Reserve"}
+              </span>
+            </div>
+          </motion.button>
+        ))}
+      </div>
+
+      <Divider label="Your usual" />
+
+      <motion.button
+        onClick={onQuickBook}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileTap={{ scale: 0.99 }}
+        className="w-full text-left p-4 flex items-center justify-between"
+        style={{
+          background: `linear-gradient(160deg, ${GRAPHITE_2} 0%, ${GRAPHITE} 100%)`,
+          border: `1px solid ${VEIN}33`,
+        }}
+      >
+        <div>
+          <p className="text-[9px] tracking-[0.4em] uppercase" style={{ color: VEIN, fontFamily: fontStack.body }}>
+            The pattern
+          </p>
+          <p
+            className="text-base mt-1"
+            style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}
+          >
+            The Saloon · Friday · 7 PM · two
+          </p>
+        </div>
+        <span
+          className="text-[9px] tracking-[0.3em] uppercase px-2 py-1"
+          style={{ color: COBALT, border: `1px solid ${COBALT}`, fontFamily: fontStack.body }}
+        >
+          Hold it
+        </span>
+      </motion.button>
+
+      <Divider label="Concierge" />
+
+      <div
+        className="p-4"
+        style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}33` }}
+      >
+        <input
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && submitNote()}
+          placeholder="What can we arrange?"
+          className="w-full bg-transparent border-b py-2 outline-none"
+          style={{
+            borderColor: VEIN,
+            color: MARBLE,
+            fontFamily: fontStack.display,
+            fontSize: 16,
+          }}
+        />
+
+        <div className="flex flex-wrap gap-2 mt-4">
+          {chips.map((c) => (
+            <button
+              key={c}
+              onClick={() => onConcierge(c)}
+              className="text-[10px] tracking-[0.25em] uppercase px-3 py-1.5"
+              style={{
+                color: MARBLE + "BB",
+                border: `1px solid ${VEIN}55`,
+                fontFamily: fontStack.body,
+              }}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={submitNote}
+          disabled={!note.trim()}
+          className="w-full mt-4 py-3 text-[10px] tracking-[0.3em] uppercase flex items-center justify-center gap-2"
+          style={{
+            color: note.trim() ? MARBLE : MARBLE + "55",
+            background: note.trim() ? COBALT : "transparent",
+            border: `1px solid ${note.trim() ? COBALT : VEIN + "55"}`,
+            fontFamily: fontStack.body,
+            transition: "all 0.2s",
+          }}
+        >
+          <Send size={12} /> Send note
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const HomeScreen = ({ events, onRSVP }) => {
   const [expandedId, setExpandedId] = useState(null);
@@ -798,6 +1001,7 @@ const RulesScreen = () => (
 
 // ─── App shell ─────────────────────────────────────────────────────
 const TABS = [
+  { id: "foryou", label: "For You", Icon: Sparkles },
   { id: "home", label: "Events", Icon: Calendar },
   { id: "guests", label: "Guests", Icon: UserPlus },
   { id: "reserve", label: "Reserve", Icon: Wine },
@@ -807,10 +1011,13 @@ const TABS = [
 ];
 
 export default function ClubApp() {
-  const [tab, setTab] = useState("home");
+  const [tab, setTab] = useState("foryou");
   const [events, setEvents] = useState(EVENTS);
   const [guests, setGuests] = useState(INITIAL_GUESTS);
   const [toast, setToast] = useState(null);
+
+  const handleConcierge = () => showToast("Note sent · concierge will reply by text");
+  const handleQuickBook = () => showToast("Saloon · Fri 7 PM · held");
 
   const showToast = (msg) => {
     setToast(msg);
@@ -923,6 +1130,14 @@ export default function ClubApp() {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25 }}
               >
+                {tab === "foryou" && (
+                  <ForYouScreen
+                    events={events}
+                    onRSVP={handleRSVP}
+                    onConcierge={handleConcierge}
+                    onQuickBook={handleQuickBook}
+                  />
+                )}
                 {tab === "home" && <HomeScreen events={events} onRSVP={handleRSVP} />}
                 {tab === "guests" && <GuestsScreen guests={guests} onAdd={handleAddGuest} />}
                 {tab === "card" && <MembershipScreen />}
