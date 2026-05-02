@@ -1,0 +1,39 @@
+name: Revert last promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "revert" to confirm — this rolls production back to the previous version'
+        required: true
+        default: ''
+
+jobs:
+  revert:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'revert'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "Oak Room Revert Bot"
+          git config user.email "actions@github.com"
+
+      - name: Revert last commit on main
+        run: |
+          git revert HEAD --no-edit
+          git push origin main
+
+      - name: Summary
+        run: |
+          echo "✓ Reverted last commit on main."
+          echo "Vercel will redeploy production within ~60 seconds."
