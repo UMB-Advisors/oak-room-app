@@ -4,9 +4,9 @@
   "teamIdentifier": "82Q9VC6ZPG",
   "organizationName": "The Oak Room",
   "description": "The Oak Room Houston · Members Pass",
-  "foregroundColor": "rgb(232, 226, 210)",
-  "backgroundColor": "rgb(10, 10, 11)",
-  "labelColor": "rgb(180, 156, 110)",
+  "foregroundColor": "rgb(31, 29, 26)",
+  "backgroundColor": "rgb(176, 168, 156)",
+  "labelColor": "rgb(70, 65, 58)",
   "generic": {
     "primaryFields": [
       {

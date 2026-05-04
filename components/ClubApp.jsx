@@ -36,12 +36,14 @@ const VEIN = "#9AA3AE";          // cool grey vein — borders, dividers, SVG st
 const VEIN_TEXT = "#B8C2CC";     // brighter vein — text-only, ≈5.2:1 on GRAPHITE for WCAG AA
 const TEXT_DIM = "#A4A8AE";      // bumped from #8B8E94 for AA contrast
 
-// Wallet pass — AMEX Centurion-inspired palette, used by WalletPassFace
-// + scripts/pass-template.pass/pass.json. Different from the in-app cobalt
-// accent to give the wallet card a distinct ultra-luxury register.
-const PASS_BG = "#0A0A0B";       // near-black, slight warmth
-const PASS_FG = "#E8E2D2";       // warm cream / faint marble
-const CHAMPAGNE = "#B49C6E";     // antique gold accent — labels, tree mark
+// Wallet pass — matches the physical Oak Room metal card: brushed warm
+// silver, dark engraved oak, framed "OAK ROOM PRIVATE" wordmark. Different
+// from the in-app cobalt accent so the wallet card reads as a separate
+// (collectible) object.
+const STEEL_HI = "#D8D2C4";      // warm silver highlight
+const STEEL_MID = "#B0A89C";     // brushed mid-tone
+const STEEL_LO = "#8C8478";      // shadow / engraved depth
+const ENGRAVED = "#1F1D1A";      // tree silhouette + wordmark — near-black warm
 
 const fontStack = {
   display: "'Canela', 'GT Super Display', 'Cormorant Garamond', Georgia, serif",
@@ -752,112 +754,171 @@ const WalletPassFace = () => (
     style={{
       aspectRatio: "5 / 8",
       maxWidth: 260,
-      background: `radial-gradient(ellipse at 50% 30%, #15151700 0%, ${PASS_BG} 70%), ${PASS_BG}`,
+      background: `linear-gradient(160deg, ${STEEL_HI} 0%, ${STEEL_MID} 25%, ${STEEL_HI} 45%, ${STEEL_LO} 65%, ${STEEL_MID} 80%, ${STEEL_HI} 100%)`,
       borderRadius: 18,
-      color: PASS_FG,
+      color: ENGRAVED,
       boxShadow: `
-        0 30px 60px -30px rgba(0,0,0,0.85),
-        0 0 0 1px rgba(180,156,110,0.12),
-        inset 0 1px 0 rgba(255,255,255,0.05)
+        0 30px 60px -30px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(0,0,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.45)
       `,
     }}
   >
-    {/* Tree silhouette watermark — AMEX Centurion-style relief mark behind the text */}
+    {/* Brushed-metal hairline texture */}
+    <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 200 320" aria-hidden="true">
+      {Array.from({ length: 110 }).map((_, i) => (
+        <line
+          key={i}
+          x1="0"
+          y1={i * 3}
+          x2="200"
+          y2={i * 3}
+          stroke="white"
+          strokeWidth={i % 7 === 0 ? "0.6" : "0.2"}
+          opacity={i % 7 === 0 ? "0.22" : "0.08"}
+        />
+      ))}
+    </svg>
+
+    {/* Oak silhouette — large, engraved, dominant. Builder's coords scaled to portrait. */}
     <svg
       className="absolute pointer-events-none"
-      style={{ top: "8%", left: "50%", transform: "translateX(-50%)", width: "60%", opacity: 0.06 }}
-      viewBox="0 0 200 200"
+      style={{ top: "0%", left: "0%", width: "100%", height: "70%" }}
+      viewBox="0 0 400 252"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden="true"
     >
-      <g fill={CHAMPAGNE}>
-        <path d="M93,180 L93,115 Q97,108 100,109 Q103,108 107,115 L107,180 Z" />
-        <ellipse cx="100" cy="178" rx="14" ry="3" />
-        <ellipse cx="100" cy="68" rx="56" ry="48" />
-        <ellipse cx="62" cy="86" rx="36" ry="30" />
-        <ellipse cx="138" cy="84" rx="38" ry="32" />
-        <ellipse cx="80" cy="46" rx="32" ry="26" />
-        <ellipse cx="120" cy="44" rx="34" ry="28" />
-        <ellipse cx="100" cy="34" rx="26" ry="22" />
+      <g fill={ENGRAVED} opacity="0.42">
+        <path d="M188,252 L188,148 Q194,140 200,142 Q206,140 212,148 L212,252 Z" />
+        <ellipse cx="200" cy="250" rx="26" ry="6" />
+        <ellipse cx="200" cy="82" rx="88" ry="72" />
+        <ellipse cx="115" cy="105" rx="68" ry="52" />
+        <ellipse cx="285" cy="100" rx="72" ry="56" />
+        <ellipse cx="160" cy="50" rx="58" ry="46" />
+        <ellipse cx="242" cy="46" rx="62" ry="48" />
+        <ellipse cx="72" cy="128" rx="52" ry="40" />
+        <ellipse cx="328" cy="120" rx="55" ry="43" />
+        <ellipse cx="200" cy="36" rx="48" ry="40" />
+        <ellipse cx="345" cy="148" rx="42" ry="33" />
+        <ellipse cx="55" cy="148" rx="44" ry="34" />
+        <ellipse cx="130" cy="142" rx="42" ry="30" />
+        <ellipse cx="270" cy="138" rx="44" ry="32" />
       </g>
     </svg>
 
-    {/* Top — wordmark + NFC waves */}
-    <div className="relative px-5 pt-5 flex items-start justify-between">
-      <div>
-        <p
-          className="text-base"
-          style={{
-            fontFamily: fontStack.display,
-            color: CHAMPAGNE,
-            fontWeight: 400,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-          }}
-        >
-          The Oak Room
-        </p>
-        <p className="text-[10px] mt-1 italic" style={{ fontFamily: fontStack.display, color: PASS_FG + "AA" }}>
-          The Post Oak Hotel · Houston
-        </p>
-      </div>
-      <svg
-        width="22"
-        height="22"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        style={{ color: CHAMPAGNE + "AA" }}
-        aria-hidden="true"
+    {/* NFC waves — top right */}
+    <svg
+      className="absolute top-4 right-4 pointer-events-none"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      style={{ color: ENGRAVED, opacity: 0.6 }}
+      aria-hidden="true"
+    >
+      <path d="M6 6 Q 13 12 6 18" />
+      <path d="M10 6 Q 17 12 10 18" />
+      <path d="M14 6 Q 21 12 14 18" />
+    </svg>
+
+    {/* Framed wordmark — sits over the canopy, matches the physical card */}
+    <div
+      className="absolute"
+      style={{
+        top: "22%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        padding: "10px 18px",
+        border: `1px solid rgba(31,29,26,0.7)`,
+        textAlign: "center",
+        minWidth: 130,
+      }}
+    >
+      <p
+        style={{
+          fontFamily: fontStack.display,
+          fontStyle: "italic",
+          fontSize: 12,
+          color: ENGRAVED,
+          lineHeight: 1.1,
+          marginBottom: 1,
+        }}
       >
-        <path d="M6 6 Q 13 12 6 18" />
-        <path d="M10 6 Q 17 12 10 18" />
-        <path d="M14 6 Q 21 12 14 18" />
-      </svg>
+        The
+      </p>
+      <p
+        style={{
+          fontFamily: fontStack.display,
+          fontSize: 19,
+          color: ENGRAVED,
+          letterSpacing: "0.05em",
+          lineHeight: 1.05,
+          fontWeight: 400,
+        }}
+      >
+        OAK ROOM
+      </p>
+      <p
+        style={{
+          fontFamily: fontStack.body,
+          fontSize: 7.5,
+          color: ENGRAVED,
+          letterSpacing: "0.45em",
+          marginTop: 4,
+        }}
+      >
+        PRIVATE
+      </p>
     </div>
 
-    {/* Primary field — Member name */}
-    <div className="relative px-5 mt-8">
-      <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: CHAMPAGNE, fontWeight: 500 }}>
+    {/* Member fields — anchored just above the barcode strip */}
+    <div className="absolute left-0 right-0 px-4" style={{ bottom: "32%" }}>
+      <p
+        className="text-[8px] tracking-[0.4em] uppercase text-center"
+        style={{ fontFamily: fontStack.body, color: ENGRAVED, opacity: 0.65, fontWeight: 500 }}
+      >
         Member
       </p>
       <p
-        className="text-2xl mt-1 leading-tight"
-        style={{ fontFamily: fontStack.display, fontWeight: 400, letterSpacing: "-0.01em", color: PASS_FG }}
+        className="mt-1 text-center leading-tight"
+        style={{
+          fontFamily: fontStack.display,
+          fontSize: 18,
+          color: ENGRAVED,
+          letterSpacing: "0.02em",
+          fontWeight: 400,
+        }}
       >
         {MEMBER.name}
       </p>
-    </div>
-
-    {/* Secondary fields */}
-    <div className="relative px-5 mt-5 flex gap-7">
-      <div>
-        <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: CHAMPAGNE, fontWeight: 500 }}>
-          Tier
-        </p>
-        <p className="text-base mt-1 italic" style={{ fontFamily: fontStack.display, color: PASS_FG }}>
+      <div className="flex justify-center gap-6 mt-2.5">
+        <p
+          style={{
+            fontFamily: fontStack.body,
+            fontSize: 8,
+            letterSpacing: "0.3em",
+            color: ENGRAVED,
+            opacity: 0.7,
+            textTransform: "uppercase",
+          }}
+        >
           {MEMBER.tier}
         </p>
-      </div>
-      <div>
-        <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: CHAMPAGNE, fontWeight: 500 }}>
-          No.
-        </p>
-        <p className="text-base mt-1 italic" style={{ fontFamily: fontStack.display, color: PASS_FG }}>
+        <p
+          style={{
+            fontFamily: fontStack.mono,
+            fontSize: 8,
+            letterSpacing: "0.2em",
+            color: ENGRAVED,
+            opacity: 0.7,
+          }}
+        >
           {MEMBER.memberNo}
         </p>
       </div>
-    </div>
-
-    {/* Auxiliary — member since */}
-    <div className="relative px-5 mt-4">
-      <p className="text-[9px] tracking-[0.4em] uppercase" style={{ fontFamily: fontStack.body, color: CHAMPAGNE, fontWeight: 500 }}>
-        Member Since
-      </p>
-      <p className="text-sm mt-1 italic" style={{ fontFamily: fontStack.display, color: PASS_FG + "DD" }}>
-        {MEMBER.joined}
-      </p>
     </div>
 
     {/* Barcode strip — white, like Apple Wallet */}
