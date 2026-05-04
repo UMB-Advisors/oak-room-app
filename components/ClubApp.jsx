@@ -967,27 +967,19 @@ const MembershipScreen = ({ guests = [] }) => (
         ))}
       </svg>
 
-      {/* Oak tree silhouette — real canopy from The Post Oak Hotel logo,
-          composited over Builder's trunk + root flare. The canopy renders
-          via SVG <image> so it still respects the parent transform/clip,
-          while the trunk stays as a vector path for crisp scaling. */}
+      {/* Real Post Oak silhouette — canopy + trunk live in the PNG itself,
+          so we just composite it once at full card height, anchored bottom. */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
         viewBox="0 0 400 252"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="xMidYMax meet"
       >
-        {/* Trunk + root flare (back layer, behind canopy) */}
-        <g fill="#1a1a1a" opacity="0.55">
-          <path d="M188,252 L188,148 Q194,140 200,142 Q206,140 212,148 L212,252 Z"/>
-          <ellipse cx="200" cy="250" rx="26" ry="6"/>
-        </g>
-        {/* Real Post Oak canopy on top */}
         <image
           href="/oak-canopy.png"
-          x="0" y="-5"
-          width="400" height="160"
-          preserveAspectRatio="xMidYMin meet"
-          opacity="0.7"
+          x="0" y="0"
+          width="400" height="252"
+          preserveAspectRatio="xMidYMax meet"
+          opacity="0.55"
         />
       </svg>
 
