@@ -920,6 +920,195 @@ const WalletPassFace = () => (
   </div>
 );
 
+// Smoothly tween a number to a target. Returns the current display value.
+const useCountTo = (target, durationMs = 1100) => {
+  const [value, setValue] = useState(target);
+  React.useEffect(() => {
+    let raf;
+    const start = performance.now();
+    const from = value;
+    const delta = target - from;
+    if (delta === 0) return;
+    // ease-out-quart — fast start, silky deceleration
+    const ease = (t) => 1 - Math.pow(1 - t, 4);
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / durationMs);
+      setValue(from + delta * ease(t));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, durationMs]);
+  return value;
+};
+
+const LedgerCard = () => {
+  const STARTING_BALANCE = 1284.5;
+  const [target, setTarget] = useState(STARTING_BALANCE);
+  const [settling, setSettling] = useState(false);
+  const [settled, setSettled] = useState(false);
+  const live = useCountTo(target, 1100);
+
+  const handleSettle = () => {
+    if (settling || settled) return;
+    setSettling(true);
+    setTarget(0);
+    // After the count-to-zero finishes, swap to the settled face.
+    setTimeout(() => {
+      setSettling(false);
+      setSettled(true);
+    }, 1150);
+  };
+
+  const dollars = Math.floor(Math.max(0, live));
+  const cents = Math.round((Math.max(0, live) - dollars) * 100)
+    .toString()
+    .padStart(2, "0");
+  const today = new Date().toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  return (
+    <motion.div
+      className="relative overflow-hidden p-5 text-center"
+      style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}55` }}
+      animate={{
+        borderColor: settled ? COBALT + "AA" : VEIN + "55",
+      }}
+      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+    >
+      {/* Cobalt sweep — runs once during the settle, low opacity, no flash */}
+      <AnimatePresence>
+        {settling && (
+          <motion.div
+            initial={{ x: "-110%", opacity: 0 }}
+            animate={{ x: "110%", opacity: 0.55 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.1, ease: [0.23, 1, 0.32, 1] }}
+            className="absolute inset-y-0 pointer-events-none"
+            style={{
+              width: "60%",
+              background: `linear-gradient(90deg, transparent 0%, ${COBALT}55 50%, transparent 100%)`,
+              filter: "blur(14px)",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Quiet pulse ring at the moment of full settle */}
+      <AnimatePresence>
+        {settled && (
+          <motion.div
+            initial={{ scale: 0.6, opacity: 0.4 }}
+            animate={{ scale: 1.4, opacity: 0 }}
+            transition={{ duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              border: `1px solid ${COBALT}88`,
+              borderRadius: 2,
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <p
+        className="text-[10px] tracking-[0.4em] uppercase relative"
+        style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
+      >
+        {settled ? `Settled · ${today}` : "Current balance"}
+      </p>
+
+      <div className="relative mt-2 h-[58px] flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {!settled ? (
+            <motion.p
+              key="amount"
+              initial={false}
+              exit={{ opacity: 0, y: -6, transition: { duration: 0.35 } }}
+              className="text-5xl"
+              style={{
+                fontFamily: fontStack.display,
+                color: MARBLE,
+                fontWeight: 400,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              ${dollars.toLocaleString()}
+              <span style={{ color: VEIN_TEXT, fontSize: 28 }}>.{cents}</span>
+            </motion.p>
+          ) : (
+            <motion.div
+              key="settled"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1], delay: 0.05 }}
+              className="flex items-center gap-3"
+            >
+              <motion.span
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 320, damping: 22, delay: 0.18 }}
+                className="inline-flex items-center justify-center"
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 999,
+                  border: `1px solid ${COBALT}`,
+                  color: COBALT,
+                }}
+              >
+                <Check size={14} strokeWidth={2.2} />
+              </motion.span>
+              <span
+                className="text-3xl"
+                style={{
+                  fontFamily: fontStack.display,
+                  color: MARBLE,
+                  fontWeight: 400,
+                  fontStyle: "italic",
+                }}
+              >
+                Paid in full
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="mt-4 flex gap-2 justify-center">
+        <AnimatePresence mode="wait">
+          {!settled ? (
+            <motion.div
+              key="actions"
+              initial={false}
+              exit={{ opacity: 0, transition: { duration: 0.3 } }}
+              className="flex gap-2"
+            >
+              <BrassButton onClick={handleSettle}>
+                {settling ? "Settling…" : "Settle now"}
+              </BrassButton>
+              <BrassButton variant="ghost">Auto-pay</BrassButton>
+            </motion.div>
+          ) : (
+            <motion.p
+              key="receipt"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="text-[9px] tracking-[0.45em] uppercase"
+              style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
+            >
+              Statement on file · receipt sent
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
+
 const MembershipScreen = ({ guests = [] }) => (
   <div className="px-6 pt-3 pb-32">
     <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
@@ -1100,18 +1289,7 @@ const MembershipScreen = ({ guests = [] }) => (
 
     <Divider label="The ledger · due May 31" />
 
-    <div className="p-5 text-center" style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}55` }}>
-      <p className="text-[10px] tracking-[0.4em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-        Current balance
-      </p>
-      <p className="text-5xl mt-2" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
-        $1,284<span style={{ color: VEIN_TEXT, fontSize: 28 }}>.50</span>
-      </p>
-      <div className="mt-4 flex gap-2 justify-center">
-        <BrassButton>Settle now</BrassButton>
-        <BrassButton variant="ghost">Auto-pay</BrassButton>
-      </div>
-    </div>
+    <LedgerCard />
 
     <div className="mt-5 space-y-3.5">
       {[
