@@ -1931,9 +1931,9 @@ export default function ClubApp() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="absolute left-4 right-4 px-4 py-3 text-center"
+                className="absolute left-4 right-4 px-4 py-3 text-center z-30"
                 style={{
-                  bottom: 90,
+                  bottom: "calc(env(safe-area-inset-bottom, 0px) + 110px)",
                   background: GRAPHITE_2,
                   border: `1px solid ${COBALT}`,
                   color: MARBLE,
