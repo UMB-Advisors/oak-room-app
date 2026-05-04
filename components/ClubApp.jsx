@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -44,6 +44,8 @@ const STEEL_HI = "#D8D2C4";      // warm silver highlight
 const STEEL_MID = "#B0A89C";     // brushed mid-tone
 const STEEL_LO = "#8C8478";      // shadow / engraved depth
 const ENGRAVED = "#1F1D1A";      // tree silhouette + wordmark — near-black warm
+const CLUB_GREEN = "#4F8C5E";    // confirmed guest — muted, not stoplight-green
+const CLUB_AMBER = "#B8533F";    // pending GM approval — warm, not alarm-red
 
 const fontStack = {
   display: "'Canela', 'GT Super Display', 'Cormorant Garamond', Georgia, serif",
@@ -1153,49 +1155,359 @@ const MembershipScreen = ({ guests = [] }) => (
   </div>
 );
 
-const ReserveScreen = () => (
-  <div className="px-6 pt-3 pb-32">
-    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-      A table, a corner, a room
-    </p>
-    <h1 className="text-4xl mt-2 leading-none" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
-      <em style={{ color: COBALT }}>Reserve</em>
-    </h1>
+// ─── Reserve flow — event picker → guest-slot detail sheet ──────────
+//
+// Intended Postgres shape (mirrors mock state below; see Workstream I):
+//   table reservations (
+//     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+//     member_id       uuid NOT NULL REFERENCES members(id),
+//     event_id        uuid NOT NULL REFERENCES events(id),
+//     party_size      smallint NOT NULL,
+//     status          reservation_status NOT NULL,           -- enum
+//     created_at      timestamptz NOT NULL DEFAULT now()
+//   )
+//   table guest_invites (
+//     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+//     reservation_id  uuid NOT NULL REFERENCES reservations(id) ON DELETE CASCADE,
+//     name            text NOT NULL,
+//     phone           text NOT NULL,
+//     kind            guest_invite_kind NOT NULL,             -- 'free' | 'pending'
+//     status          guest_invite_status NOT NULL,           -- PENDING_INFO | INVITED | CONFIRMED | DENIED
+//     invited_at      timestamptz NOT NULL DEFAULT now()
+//   )
+const FREE_SLOTS_PER_RESERVATION = 3;
 
-    <Divider label="Available · party of 2" />
+const makeFreeSlot = () => ({ id: crypto.randomUUID(), kind: "free", name: "", phone: "" });
+const makePendingSlot = () => ({ id: crypto.randomUUID(), kind: "pending", name: "", phone: "" });
+const makeInitialSlots = () =>
+  Array.from({ length: FREE_SLOTS_PER_RESERVATION }, makeFreeSlot);
 
-    <div className="space-y-4">
-      {RESERVATIONS_AVAIL.map((r) => (
-        <div key={r.room} className="p-4" style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}33` }}>
-          <div className="flex justify-between items-baseline">
-            <div>
-              <h3 className="text-xl" style={{ fontFamily: fontStack.display, color: MARBLE }}>{r.room}</h3>
-              <p className="text-[10px] tracking-[0.2em] uppercase mt-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-                {r.desc}
+const initialReserveState = {
+  open: false,
+  reservationId: null,
+  eventId: null,
+  slots: [],
+  status: "idle", // 'idle' | 'sending' | 'sent'
+};
+
+function reserveReducer(s, a) {
+  switch (a.type) {
+    case "OPEN":
+      return {
+        open: true,
+        reservationId: crypto.randomUUID(),
+        eventId: a.eventId,
+        slots: makeInitialSlots(),
+        status: "idle",
+      };
+    case "CLOSE":
+      return initialReserveState;
+    case "UPDATE":
+      return {
+        ...s,
+        slots: s.slots.map((sl) =>
+          sl.id === a.id ? { ...sl, [a.field]: a.value } : sl
+        ),
+      };
+    case "REMOVE":
+      return { ...s, slots: s.slots.filter((sl) => sl.id !== a.id) };
+    case "ADD_PENDING":
+      return { ...s, slots: [...s.slots, makePendingSlot()] };
+    case "SUBMIT":
+      // guard re-entrant double-submit
+      return s.status === "sending" ? s : { ...s, status: "sending" };
+    case "SUBMIT_DONE":
+      return { ...s, status: "sent" };
+    default:
+      return s;
+  }
+}
+
+const slotIsFilled = (sl) => sl.name.trim().length > 0 && sl.phone.trim().length > 0;
+
+const GuestSlot = ({ slot, index, onChange, onRemove, removable }) => {
+  const filled = slotIsFilled(slot);
+  const accent = slot.kind === "pending" ? CLUB_AMBER : filled ? CLUB_GREEN : VEIN;
+  const label =
+    slot.kind === "pending"
+      ? `GUEST №${index + 1} · PENDING APPROVAL`
+      : `GUEST №${index + 1} · COMPLIMENTARY`;
+
+  return (
+    <div
+      className="p-3"
+      style={{
+        background: GRAPHITE_2,
+        borderLeft: `3px solid ${accent}`,
+        border: `1px solid ${accent}44`,
+        borderLeftWidth: 3,
+      }}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <p
+          className="text-[9px] tracking-[0.32em] uppercase"
+          style={{ color: accent, fontFamily: fontStack.body }}
+        >
+          {label}
+        </p>
+        {removable && (
+          <button
+            onClick={onRemove}
+            aria-label="Remove guest"
+            className="p-1"
+            style={{ color: VEIN_TEXT }}
+          >
+            <X size={12} />
+          </button>
+        )}
+      </div>
+      <input
+        type="text"
+        value={slot.name}
+        onChange={(e) => onChange("name", e.target.value)}
+        placeholder="Full name"
+        className="w-full bg-transparent text-sm py-1 outline-none"
+        style={{
+          color: MARBLE,
+          fontFamily: fontStack.body,
+          borderBottom: `1px solid ${VEIN}33`,
+        }}
+      />
+      <input
+        type="tel"
+        value={slot.phone}
+        onChange={(e) => onChange("phone", e.target.value)}
+        placeholder="Mobile number"
+        className="w-full bg-transparent text-sm py-1 mt-2 outline-none"
+        style={{
+          color: MARBLE,
+          fontFamily: fontStack.mono,
+          borderBottom: `1px solid ${VEIN}33`,
+        }}
+      />
+    </div>
+  );
+};
+
+const ReserveDetailSheet = ({ event, state, dispatch, onSubmit }) => {
+  if (!event) return null;
+
+  const filledCount = state.slots.filter(slotIsFilled).length;
+  const canSubmit = filledCount > 0 && state.status === "idle";
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    dispatch({ type: "SUBMIT" });
+    // Simulate the round-trip — real wire would await an API call here.
+    setTimeout(() => {
+      const filled = state.slots.filter(slotIsFilled);
+      onSubmit(event, filled);
+      dispatch({ type: "SUBMIT_DONE" });
+      setTimeout(() => dispatch({ type: "CLOSE" }), 800);
+    }, 500);
+  };
+
+  return (
+    <AnimatePresence>
+      {state.open && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(0,0,0,0.55)" }}
+            onClick={() => dispatch({ type: "CLOSE" })}
+          />
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 320, damping: 34 }}
+            className="fixed inset-x-0 bottom-0 z-50 max-h-[88vh] overflow-y-auto"
+            style={{
+              background: GRAPHITE,
+              borderTop: `1px solid ${VEIN}55`,
+              borderTopLeftRadius: 22,
+              borderTopRightRadius: 22,
+              paddingBottom: "max(env(safe-area-inset-bottom), 24px)",
+            }}
+          >
+            <div className="flex justify-center pt-3">
+              <div style={{ width: 38, height: 4, background: VEIN + "55", borderRadius: 2 }} />
+            </div>
+
+            <div className="px-6 pt-3 pb-2">
+              <p
+                className="text-[10px] tracking-[0.45em] uppercase"
+                style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
+              >
+                {event.date} · {event.time}
+              </p>
+              <h2
+                className="text-2xl mt-1 leading-tight"
+                style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}
+              >
+                {event.title}
+              </h2>
+              <p
+                className="text-[11px] tracking-[0.18em] uppercase mt-1"
+                style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
+              >
+                {event.host}
               </p>
             </div>
-          </div>
-          <div className="flex gap-2 mt-3 flex-wrap">
-            {r.times.map((t) => (
+
+            <div className="px-6 mt-4">
+              <p
+                className="text-[10px] tracking-[0.4em] uppercase mb-3"
+                style={{ color: COBALT, fontFamily: fontStack.body }}
+              >
+                Your guests
+              </p>
+              <p
+                className="text-[11px] mb-3"
+                style={{ color: TEXT_DIM, fontFamily: fontStack.body }}
+              >
+                Three complimentary slots are yours by tier. Beyond that, the GM
+                approves at his discretion.
+              </p>
+
+              <div className="space-y-3">
+                {state.slots.map((sl, i) => (
+                  <GuestSlot
+                    key={sl.id}
+                    slot={sl}
+                    index={i}
+                    removable={i >= FREE_SLOTS_PER_RESERVATION}
+                    onChange={(field, value) =>
+                      dispatch({ type: "UPDATE", id: sl.id, field, value })
+                    }
+                    onRemove={() => dispatch({ type: "REMOVE", id: sl.id })}
+                  />
+                ))}
+              </div>
+
               <button
-                key={t}
-                className="px-3 py-1.5 text-xs"
+                onClick={() => dispatch({ type: "ADD_PENDING" })}
+                className="mt-3 w-full py-2 text-[10px] tracking-[0.32em] uppercase"
                 style={{
-                  color: COBALT,
-                  border: `1px solid ${COBALT}`,
-                  fontFamily: fontStack.mono,
+                  color: VEIN_TEXT,
+                  border: `1px dashed ${VEIN}66`,
+                  fontFamily: fontStack.body,
                   background: "transparent",
                 }}
               >
-                {t} pm
+                + Add another guest (pending approval)
               </button>
-            ))}
-          </div>
-        </div>
-      ))}
+            </div>
+
+            <div className="px-6 mt-5">
+              <button
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                className="w-full py-3 text-[11px] tracking-[0.32em] uppercase transition-opacity"
+                style={{
+                  color: GRAPHITE,
+                  background: `linear-gradient(180deg, ${COBALT} 0%, ${COBALT_DEEP} 100%)`,
+                  fontFamily: fontStack.body,
+                  opacity: canSubmit ? 1 : 0.4,
+                  boxShadow: `0 1px 0 ${COBALT}88 inset, 0 12px 30px -16px ${COBALT}88`,
+                }}
+              >
+                {state.status === "sent"
+                  ? "Sent ✓"
+                  : state.status === "sending"
+                  ? "Sending…"
+                  : `Send ${filledCount} invitation${filledCount === 1 ? "" : "s"}`}
+              </button>
+              <p
+                className="text-[9px] tracking-[0.3em] uppercase text-center mt-3"
+                style={{ color: TEXT_DIM, fontFamily: fontStack.body }}
+              >
+                Each guest receives an SMS with a one-tap pass.
+              </p>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const ReserveScreen = ({ events, onSubmit }) => {
+  const [state, dispatch] = useReducer(reserveReducer, initialReserveState);
+  const event = events.find((e) => e.id === state.eventId);
+
+  return (
+    <div className="px-6 pt-3 pb-32">
+      <p
+        className="text-[10px] tracking-[0.5em] uppercase"
+        style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
+      >
+        Pick the night, fill the table
+      </p>
+      <h1
+        className="text-4xl mt-2 leading-none"
+        style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}
+      >
+        <em style={{ color: COBALT }}>Reserve</em>
+      </h1>
+
+      <Divider label="Upcoming · open seats" />
+
+      <div className="space-y-3">
+        {events.map((e) => (
+          <button
+            key={e.id}
+            onClick={() => dispatch({ type: "OPEN", eventId: e.id })}
+            className="w-full text-left p-4 transition-colors"
+            style={{
+              background: GRAPHITE_2,
+              border: `1px solid ${e.rsvp ? COBALT + "66" : VEIN + "22"}`,
+            }}
+          >
+            <div className="flex items-baseline justify-between">
+              <p
+                className="text-[10px] tracking-[0.32em] uppercase"
+                style={{ color: e.rsvp ? COBALT : VEIN_TEXT, fontFamily: fontStack.body }}
+              >
+                {e.date} · {e.time}
+              </p>
+              {e.rsvp && (
+                <p
+                  className="text-[9px] tracking-[0.32em] uppercase"
+                  style={{ color: COBALT, fontFamily: fontStack.body }}
+                >
+                  Reserved
+                </p>
+              )}
+            </div>
+            <h3
+              className="text-xl mt-1"
+              style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}
+            >
+              {e.title}
+            </h3>
+            <p
+              className="text-[11px] mt-1"
+              style={{ color: TEXT_DIM, fontFamily: fontStack.body }}
+            >
+              {e.teaser}
+            </p>
+          </button>
+        ))}
+      </div>
+
+      <ReserveDetailSheet
+        event={event}
+        state={state}
+        dispatch={dispatch}
+        onSubmit={onSubmit}
+      />
     </div>
-  </div>
-);
+  );
+};
 
 const RulesScreen = () => (
   <div className="px-6 pt-3 pb-32">
@@ -1389,6 +1701,30 @@ export default function ClubApp() {
     showToast(`SMS pass sent to ${name.split(" ")[0]}`);
   };
 
+  const handleReserveSubmit = (event, slots) => {
+    const arriving = `${event.date} · ${event.time}`;
+    setGuests((prev) => [
+      ...prev,
+      ...slots.map((sl) => ({
+        id: sl.id,
+        name: sl.name,
+        phone: sl.phone,
+        arriving,
+        status: sl.kind === "pending" ? "Pending" : "Notified",
+        checked: false,
+      })),
+    ]);
+    setEvents((prev) =>
+      prev.map((e) => (e.id === event.id ? { ...e, rsvp: true } : e))
+    );
+    const pendingN = slots.filter((s) => s.kind === "pending").length;
+    showToast(
+      pendingN > 0
+        ? `${slots.length} invitation${slots.length === 1 ? "" : "s"} sent · ${pendingN} pending GM`
+        : `${slots.length} invitation${slots.length === 1 ? "" : "s"} sent`
+    );
+  };
+
   return (
     <div
       // Desktop: cobalt-glow background + flex-center the phone-frame mockup.
@@ -1497,7 +1833,9 @@ export default function ClubApp() {
                 )}
                 {tab === "home" && <HomeScreen events={events} onRSVP={handleRSVP} />}
                 {tab === "card" && <MembershipScreen guests={guests} />}
-                {tab === "reserve" && <ReserveScreen />}
+                {tab === "reserve" && (
+                  <ReserveScreen events={events} onSubmit={handleReserveSubmit} />
+                )}
                 {tab === "rules" && <RulesScreen />}
               </motion.div>
             </AnimatePresence>
