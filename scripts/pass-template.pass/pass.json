@@ -12,7 +12,7 @@
       {
         "key": "name",
         "label": "MEMBER",
-        "value": "Tilman Fertitta"
+        "value": "Taylor Fertitta"
       }
     ],
     "secondaryFields": [
@@ -24,7 +24,7 @@
       {
         "key": "memberNo",
         "label": "NO.",
-        "value": "№ 0001"
+        "value": "№ 0024"
       }
     ],
     "auxiliaryFields": [
@@ -55,9 +55,9 @@
   "barcodes": [
     {
       "format": "PKBarcodeFormatQR",
-      "message": "OR-0001-FNDR",
+      "message": "OR-0024-FNDR",
       "messageEncoding": "iso-8859-1",
-      "altText": "OR-0001-FNDR"
+      "altText": "OR-0024-FNDR"
     }
   ]
 }

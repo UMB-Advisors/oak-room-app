@@ -51,11 +51,11 @@ const fontStack = {
 
 // ─── Mock data ─────────────────────────────────────────────────────
 const MEMBER = {
-  name: "Dustin Powers",
-  memberNo: "№ 0184",
+  name: "Taylor Fertitta",
+  memberNo: "№ 0024",
   tier: "Founders",
   joined: "MMXXIII",
-  cardCode: "OR-0184-FNDR",
+  cardCode: "OR-0024-FNDR",
 };
 
 const EVENTS = [

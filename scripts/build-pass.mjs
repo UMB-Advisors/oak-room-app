@@ -46,8 +46,9 @@ if (missing.length) {
 // Stub member roster — pitch-demo data only. Replace with a DB lookup
 // in the real build (see Part 5 of the pitch packet for the schema).
 const ROSTER = {
-  default: { name: "Tilman Fertitta", memberNo: "№ 0001", tier: "Founders", code: "OR-0001-FNDR" },
+  default: { name: "Taylor Fertitta", memberNo: "№ 0024", tier: "Founders", code: "OR-0024-FNDR" },
   "0184": { name: "Dustin Powers",    memberNo: "№ 0184", tier: "Founders", code: "OR-0184-FNDR" },
+  "0001": { name: "Tilman Fertitta",  memberNo: "№ 0001", tier: "Founders", code: "OR-0001-FNDR" },
 };
 
 const memberId = process.argv.includes("--member")
