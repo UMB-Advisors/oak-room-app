@@ -1518,8 +1518,7 @@ const ReserveDetailSheet = ({ event, state, dispatch, onSubmit }) => {
   );
 };
 
-const ReserveScreen = ({ events, onSubmit }) => {
-  const [state, dispatch] = useReducer(reserveReducer, initialReserveState);
+const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
   const event = events.find((e) => e.id === state.eventId);
 
   return (
@@ -1582,12 +1581,6 @@ const ReserveScreen = ({ events, onSubmit }) => {
         ))}
       </div>
 
-      <ReserveDetailSheet
-        event={event}
-        state={state}
-        dispatch={dispatch}
-        onSubmit={onSubmit}
-      />
     </div>
   );
 };
@@ -1746,9 +1739,34 @@ export default function ClubApp() {
   const [events, setEvents] = useState(EVENTS);
   const [guests, setGuests] = useState(INITIAL_GUESTS);
   const [toast, setToast] = useState(null);
+  const [reserveState, reserveDispatch] = useReducer(
+    reserveReducer,
+    initialReserveState
+  );
 
-  const handleConcierge = () => showToast("Note sent · concierge will reply by text");
-  const handleQuickBook = () => showToast("Saloon · Fri 7 PM · held");
+  // Pick a sensible event for shortcut entries (next un-RSVPed, fallback to first).
+  const nextOpenEvent = () => events.find((e) => !e.rsvp) || events[0];
+
+  const openReserveFor = (eventId) => {
+    setTab("reserve");
+    reserveDispatch({ type: "OPEN", eventId });
+  };
+
+  const handleConcierge = (msg) => {
+    if (msg && /reserve|guest/i.test(msg)) {
+      const e = nextOpenEvent();
+      if (e) {
+        openReserveFor(e.id);
+        return;
+      }
+    }
+    showToast("Note sent · concierge will reply by text");
+  };
+  const handleQuickBook = () => {
+    const e = nextOpenEvent();
+    if (e) openReserveFor(e.id);
+    else showToast("No open events to hold");
+  };
 
   const showToast = (msg) => {
     setToast(msg);
@@ -1917,12 +1935,26 @@ export default function ClubApp() {
                 {tab === "home" && <HomeScreen events={events} onRSVP={handleRSVP} />}
                 {tab === "card" && <MembershipScreen guests={guests} />}
                 {tab === "reserve" && (
-                  <ReserveScreen events={events} onSubmit={handleReserveSubmit} />
+                  <ReserveScreen
+                    events={events}
+                    onSubmit={handleReserveSubmit}
+                    state={reserveState}
+                    dispatch={reserveDispatch}
+                  />
                 )}
                 {tab === "rules" && <RulesScreen />}
               </motion.div>
             </AnimatePresence>
           </div>
+
+          {/* Reserve detail sheet — mounted at shell level so its
+              position:fixed escapes the tab-transition motion.div. */}
+          <ReserveDetailSheet
+            event={events.find((e) => e.id === reserveState.eventId)}
+            state={reserveState}
+            dispatch={reserveDispatch}
+            onSubmit={handleReserveSubmit}
+          />
 
           {/* Toast */}
           <AnimatePresence>
