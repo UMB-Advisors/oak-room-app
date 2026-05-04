@@ -72,6 +72,7 @@ const EVENTS = [
     spots: "Complimentary",
     note: "Elegant selections from Oregon's Willamette Valley.",
     teaser: "Willamette Valley · complimentary",
+    image: "/events/tres-colline.jpg",
     rsvp: false,
   },
   {
@@ -83,6 +84,7 @@ const EVENTS = [
     spots: "Hat contest · live viewing",
     note: "Woodford Reserve cocktails. Wear the hat.",
     teaser: "Woodford cocktails · hat contest",
+    image: "/events/derby.jpg",
     rsvp: true,
   },
   {
@@ -94,6 +96,7 @@ const EVENTS = [
     spots: "Interactive brunch",
     note: "Bouquet station, signature cocktails, scent bar by Maison Francis Kurkdjian.",
     teaser: "Brunch · bouquet & scent bar",
+    image: "/events/mothers-day.jpg",
     rsvp: false,
   },
   {
@@ -105,6 +108,7 @@ const EVENTS = [
     spots: "RSVP required",
     note: "First look at the new capsule, poolside.",
     teaser: "Capsule preview · poolside",
+    image: "/events/poolside.jpg",
     rsvp: false,
   },
   {
@@ -116,6 +120,7 @@ const EVENTS = [
     spots: "Complimentary",
     note: "Signature smoothness across the Crown Royal lineup.",
     teaser: "Saloon · complimentary",
+    image: "/events/crown-royal.jpg",
     rsvp: false,
   },
   {
@@ -127,6 +132,7 @@ const EVENTS = [
     spots: "Exclusive tasting",
     note: "Bold craftsmanship across the Whistlepig signature ryes.",
     teaser: "Rye flight · Saloon",
+    image: "/events/whistlepig.jpg",
     rsvp: false,
   },
 ];
@@ -283,6 +289,19 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
             }}
           >
             <div className="flex items-start justify-between gap-3">
+              {e.image && (
+                <div
+                  className="flex-shrink-0 overflow-hidden"
+                  style={{ width: 72, height: 72, border: `1px solid ${BRASS}55` }}
+                >
+                  <img
+                    src={e.image}
+                    alt=""
+                    aria-hidden
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] tracking-[0.3em]" style={{ color: BRASS, fontFamily: fontStack.body, fontWeight: 500 }}>
                   {e.date} · {e.time}
@@ -440,23 +459,41 @@ const HomeScreen = ({ events, onRSVP }) => {
             whileTap={{ scale: 0.98 }}
             className="relative text-left overflow-hidden aspect-square"
             style={{
-              background: `linear-gradient(160deg, ${GRAPHITE_2} 0%, ${GRAPHITE} 100%)`,
+              background: GRAPHITE,
               border: `1px solid ${VEIN}33`,
             }}
           >
-            <span className="absolute top-0 left-0 w-2.5 h-2.5 border-t border-l" style={{ borderColor: BRASS }} />
-            <span className="absolute top-0 right-0 w-2.5 h-2.5 border-t border-r" style={{ borderColor: BRASS }} />
-            <span className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b border-l" style={{ borderColor: BRASS }} />
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r" style={{ borderColor: BRASS }} />
+            {/* Event photo as backdrop, dimmed for legibility */}
+            {e.image && (
+              <img
+                src={e.image}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ opacity: 0.45 }}
+              />
+            )}
+            {/* Graphite gradient over the image so text reads cleanly */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(180deg, ${GRAPHITE}AA 0%, ${GRAPHITE}66 50%, ${GRAPHITE}EE 100%)`,
+              }}
+            />
+
+            <span className="absolute top-0 left-0 w-2.5 h-2.5 border-t border-l z-10" style={{ borderColor: BRASS }} />
+            <span className="absolute top-0 right-0 w-2.5 h-2.5 border-t border-r z-10" style={{ borderColor: BRASS }} />
+            <span className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b border-l z-10" style={{ borderColor: BRASS }} />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r z-10" style={{ borderColor: BRASS }} />
 
             {e.rsvp && (
               <span
-                className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
+                className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full z-10"
                 style={{ background: BRASS, boxShadow: `0 0 8px ${BRASS}` }}
               />
             )}
 
-            <div className="p-3 h-full flex flex-col justify-between">
+            <div className="relative z-10 p-3 h-full flex flex-col justify-between">
               <div>
                 <p
                   className="text-[10px] tracking-[0.3em]"
@@ -524,6 +561,23 @@ const HomeScreen = ({ events, onRSVP }) => {
               >
                 <X size={12} />
               </button>
+
+              {expanded.image && (
+                <div className="relative w-full" style={{ height: 160 }}>
+                  <img
+                    src={expanded.image}
+                    alt=""
+                    aria-hidden
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(180deg, transparent 60%, ${GRAPHITE_2} 100%)`,
+                    }}
+                  />
+                </div>
+              )}
 
               <div className="p-5">
                 <p
@@ -1590,10 +1644,27 @@ const ReserveDetailSheet = ({ event, state, dispatch, onSubmit }) => {
               <div style={{ width: 38, height: 4, background: VEIN + "55", borderRadius: 2 }} />
             </div>
 
+            {event.image && (
+              <div className="relative mx-4 mt-3 overflow-hidden" style={{ height: 140 }}>
+                <img
+                  src={event.image}
+                  alt=""
+                  aria-hidden
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(180deg, transparent 50%, ${GRAPHITE} 100%)`,
+                  }}
+                />
+              </div>
+            )}
+
             <div className="px-6 pt-3 pb-2">
               <p
                 className="text-[10px] tracking-[0.45em] uppercase"
-                style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
+                style={{ color: BRASS, fontFamily: fontStack.body }}
               >
                 {event.date} · {event.time}
               </p>
@@ -1721,40 +1792,55 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
           <button
             key={e.id}
             onClick={() => dispatch({ type: "OPEN", eventId: e.id })}
-            className="w-full text-left p-4 transition-colors"
+            className="w-full text-left p-4 transition-colors flex items-stretch gap-4"
             style={{
               background: GRAPHITE_2,
               border: `1px solid ${e.rsvp ? BRASS + "66" : VEIN + "22"}`,
             }}
           >
-            <div className="flex items-baseline justify-between">
-              <p
-                className="text-[10px] tracking-[0.32em] uppercase"
-                style={{ color: e.rsvp ? BRASS : VEIN_TEXT, fontFamily: fontStack.body }}
+            {e.image && (
+              <div
+                className="flex-shrink-0 overflow-hidden"
+                style={{ width: 80, height: 80, border: `1px solid ${BRASS}55` }}
               >
-                {e.date} · {e.time}
-              </p>
-              {e.rsvp && (
+                <img
+                  src={e.image}
+                  alt=""
+                  aria-hidden
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline justify-between">
                 <p
-                  className="text-[9px] tracking-[0.32em] uppercase"
-                  style={{ color: BRASS, fontFamily: fontStack.body }}
+                  className="text-[10px] tracking-[0.32em] uppercase"
+                  style={{ color: e.rsvp ? BRASS : VEIN_TEXT, fontFamily: fontStack.body }}
                 >
-                  Reserved
+                  {e.date} · {e.time}
                 </p>
-              )}
+                {e.rsvp && (
+                  <p
+                    className="text-[9px] tracking-[0.32em] uppercase"
+                    style={{ color: BRASS, fontFamily: fontStack.body }}
+                  >
+                    Reserved
+                  </p>
+                )}
+              </div>
+              <h3
+                className="text-xl mt-1 leading-tight"
+                style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}
+              >
+                {e.title}
+              </h3>
+              <p
+                className="text-[11px] mt-1"
+                style={{ color: TEXT_DIM, fontFamily: fontStack.body }}
+              >
+                {e.teaser}
+              </p>
             </div>
-            <h3
-              className="text-xl mt-1"
-              style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}
-            >
-              {e.title}
-            </h3>
-            <p
-              className="text-[11px] mt-1"
-              style={{ color: TEXT_DIM, fontFamily: fontStack.body }}
-            >
-              {e.teaser}
-            </p>
           </button>
         ))}
       </div>
