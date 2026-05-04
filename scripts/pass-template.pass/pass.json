@@ -8,14 +8,15 @@
   "backgroundColor": "rgb(176, 168, 156)",
   "labelColor": "rgb(70, 65, 58)",
   "storeCard": {
-    "primaryFields": [
+    "primaryFields": [],
+    "secondaryFields": [
       {
         "key": "name",
         "label": "MEMBER",
         "value": "Taylor Fertitta"
       }
     ],
-    "secondaryFields": [
+    "auxiliaryFields": [
       {
         "key": "tier",
         "label": "TIER",
@@ -25,9 +26,7 @@
         "key": "memberNo",
         "label": "NO.",
         "value": "№ 0024"
-      }
-    ],
-    "auxiliaryFields": [
+      },
       {
         "key": "joined",
         "label": "MEMBER SINCE",

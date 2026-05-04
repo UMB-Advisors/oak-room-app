@@ -84,9 +84,9 @@ const setField = (fieldArray, key, value) => {
   const f = fieldArray.find((x) => x.key === key);
   if (f) f.value = value;
 };
-setField(pass.props.storeCard.primaryFields, "name", member.name);
-setField(pass.props.storeCard.secondaryFields, "tier", member.tier);
-setField(pass.props.storeCard.secondaryFields, "memberNo", member.memberNo);
+setField(pass.props.storeCard.secondaryFields, "name", member.name);
+setField(pass.props.storeCard.auxiliaryFields, "tier", member.tier);
+setField(pass.props.storeCard.auxiliaryFields, "memberNo", member.memberNo);
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const outFile = path.join(OUT_DIR, `${memberId === "default" ? "founders" : memberId}.pkpass`);
