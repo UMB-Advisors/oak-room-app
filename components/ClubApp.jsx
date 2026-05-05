@@ -339,8 +339,8 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
 
       <div className="space-y-3">
         {[
-          { label: "The pattern", detail: "Bar Top · Friday · 7 PM · You +3" },
-          { label: "The pattern", detail: "Window View · Thursday · 8:30 PM · You +1" },
+          { label: "The pattern", detail: "Bar Top · Friday · 7 PM", party: "You +3" },
+          { label: "The pattern", detail: "Window View · Thursday · 8:30 PM", party: "You +1" },
         ].map((item, i) => (
           <motion.button
             key={i}
@@ -361,6 +361,9 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
               </p>
               <p className="text-base mt-1" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
                 {item.detail}
+              </p>
+              <p className="text-lg mt-1" style={{ fontFamily: fontStack.display, color: BRASS, fontWeight: 400, fontStyle: "italic" }}>
+                {item.party}
               </p>
             </div>
             <span
