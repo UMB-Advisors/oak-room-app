@@ -1772,6 +1772,8 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
 
   const [guestOpen, setGuestOpen] = useState(false);
   const [guestCount, setGuestCount] = useState(1);
+  const [guestName, setGuestName] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
   const needsApproval = guestCount > 3;
 
   return (
@@ -1864,6 +1866,51 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
                       +
                     </button>
                   </div>
+                </div>
+
+                {/* Name field */}
+                <div className="space-y-1">
+                  <label
+                    className="text-[10px] tracking-[0.25em] uppercase block"
+                    style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
+                  >
+                    Guest name
+                  </label>
+                  <input
+                    type="text"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    placeholder="Full name"
+                    className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
+                    style={{
+                      border: `1px solid ${VEIN}44`,
+                      color: MARBLE,
+                      fontFamily: fontStack.body,
+                      "--tw-placeholder-color": TEXT_DIM,
+                    }}
+                  />
+                </div>
+
+                {/* Phone field */}
+                <div className="space-y-1">
+                  <label
+                    className="text-[10px] tracking-[0.25em] uppercase block"
+                    style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
+                  >
+                    Phone number
+                  </label>
+                  <input
+                    type="tel"
+                    value={guestPhone}
+                    onChange={(e) => setGuestPhone(e.target.value)}
+                    placeholder="(000) 000-0000"
+                    className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
+                    style={{
+                      border: `1px solid ${VEIN}44`,
+                      color: MARBLE,
+                      fontFamily: fontStack.body,
+                    }}
+                  />
                 </div>
 
                 {/* Status */}
