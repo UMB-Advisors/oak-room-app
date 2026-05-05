@@ -1449,8 +1449,6 @@ const MembershipScreen = ({ guests = [] }) => (
 
     <Divider label="Or carry it on your iPhone" />
 
-    <WalletPassFace />
-
     <a
       href="/api/wallet-pass"
       className="mt-5 w-full py-3.5 flex items-center justify-center gap-2.5 text-[11px] tracking-[0.3em] uppercase no-underline transition-all"
