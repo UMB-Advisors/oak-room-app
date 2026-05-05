@@ -1237,100 +1237,117 @@ const LedgerCard = () => {
   );
 };
 
+const LEDGER_ENTRIES = [
+  "May 4, 2026",
+  "Apr 28, 2026",
+  "Apr 19, 2026",
+  "Apr 11, 2026",
+  "Mar 29, 2026",
+];
+
 const ExpenseLedger = () => {
-  const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [openIdx, setOpenIdx] = useState(null);
+  const [emails, setEmails] = useState({});
+  const [sent, setSent] = useState({});
 
-  const today = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const toggle = (i) => setOpenIdx((prev) => (prev === i ? null : i));
 
-  const handleSend = () => {
-    if (!email.trim()) return;
-    setSent(true);
-    setOpen(false);
+  const handleSend = (i) => {
+    if (!emails[i]?.trim()) return;
+    setSent((s) => ({ ...s, [i]: true }));
+    setOpenIdx(null);
   };
 
   return (
     <div style={{ border: `1px solid ${VEIN}33` }}>
-      {/* Two-column row */}
-      <div className="grid grid-cols-2" style={{ borderBottom: open ? `1px solid ${VEIN}22` : "none" }}>
-        {/* Left — date */}
-        <div
-          className="px-4 py-4 flex flex-col justify-center"
-          style={{ borderRight: `1px solid ${VEIN}22` }}
-        >
-          <p className="text-[9px] tracking-[0.35em] uppercase mb-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-            Date
-          </p>
-          <p className="text-[13px]" style={{ color: MARBLE, fontFamily: fontStack.display, fontWeight: 400 }}>
-            {today}
-          </p>
-        </div>
-
-        {/* Right — request */}
-        <button
-          onClick={() => { setOpen((o) => !o); setSent(false); }}
-          className="px-4 py-4 text-left flex flex-col justify-center"
-          style={{ background: open ? GRAPHITE_2 : "transparent" }}
-        >
-          <p className="text-[9px] tracking-[0.35em] uppercase mb-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-            Expenses
-          </p>
-          {sent ? (
-            <p className="text-[13px]" style={{ color: BRASS, fontFamily: fontStack.display, fontStyle: "italic" }}>
-              Statement sent
-            </p>
-          ) : (
-            <p className="text-[13px]" style={{ color: MARBLE, fontFamily: fontStack.display, fontWeight: 400 }}>
-              Request items <span style={{ color: BRASS }}>→</span>
-            </p>
-          )}
-        </button>
-      </div>
-
-      {/* Expandable email form */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            style={{ overflow: "hidden" }}
+      {LEDGER_ENTRIES.map((date, i) => (
+        <React.Fragment key={i}>
+          {/* Two-column row */}
+          <div
+            className="grid grid-cols-2"
+            style={{
+              borderBottom: `1px solid ${VEIN}22`,
+            }}
           >
-            <div className="px-4 py-4 space-y-3" style={{ background: GRAPHITE_2 }}>
-              <p className="text-[11px] leading-relaxed" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
-                We'll email an itemized statement — ready for expense reporting.
+            {/* Left — date */}
+            <div
+              className="px-4 py-3.5 flex flex-col justify-center"
+              style={{ borderRight: `1px solid ${VEIN}22` }}
+            >
+              {i === 0 && (
+                <p className="text-[9px] tracking-[0.35em] uppercase mb-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+                  Date
+                </p>
+              )}
+              <p className="text-[13px]" style={{ color: i === 0 ? MARBLE : MARBLE + "BB", fontFamily: fontStack.display, fontWeight: 400 }}>
+                {date}
               </p>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
-                style={{ border: `1px solid ${VEIN}44`, color: MARBLE, fontFamily: fontStack.body }}
-              />
-              <button
-                onClick={handleSend}
-                className="w-full py-2 text-[11px] tracking-[0.3em] uppercase"
-                style={{
-                  background: email.trim() ? BRASS : "transparent",
-                  color: email.trim() ? "#1a1a1a" : VEIN_TEXT,
-                  border: `1px solid ${email.trim() ? BRASS : VEIN + "33"}`,
-                  fontFamily: fontStack.body,
-                  opacity: email.trim() ? 1 : 0.55,
-                }}
-              >
-                Send statement
-              </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            {/* Right — request */}
+            <button
+              onClick={() => !sent[i] && toggle(i)}
+              className="px-4 py-3.5 text-left flex flex-col justify-center"
+              style={{ background: openIdx === i ? GRAPHITE_2 : "transparent" }}
+            >
+              {i === 0 && (
+                <p className="text-[9px] tracking-[0.35em] uppercase mb-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+                  Expenses
+                </p>
+              )}
+              {sent[i] ? (
+                <p className="text-[13px]" style={{ color: BRASS, fontFamily: fontStack.display, fontStyle: "italic" }}>
+                  Statement sent
+                </p>
+              ) : (
+                <p className="text-[13px]" style={{ color: i === 0 ? MARBLE : MARBLE + "BB", fontFamily: fontStack.display, fontWeight: 400 }}>
+                  Request Itemized <span style={{ color: BRASS }}>→</span>
+                </p>
+              )}
+            </button>
+          </div>
+
+          {/* Expandable email form */}
+          <AnimatePresence>
+            {openIdx === i && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.22 }}
+                style={{ overflow: "hidden" }}
+              >
+                <div className="px-4 py-4 space-y-3" style={{ background: GRAPHITE_2, borderBottom: `1px solid ${VEIN}22` }}>
+                  <p className="text-[11px] leading-relaxed" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
+                    We'll email an itemized statement for {date} — ready for expense reporting.
+                  </p>
+                  <input
+                    type="email"
+                    value={emails[i] || ""}
+                    onChange={(e) => setEmails((prev) => ({ ...prev, [i]: e.target.value }))}
+                    placeholder="your@email.com"
+                    className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
+                    style={{ border: `1px solid ${VEIN}44`, color: MARBLE, fontFamily: fontStack.body }}
+                  />
+                  <button
+                    onClick={() => handleSend(i)}
+                    className="w-full py-2 text-[11px] tracking-[0.3em] uppercase"
+                    style={{
+                      background: emails[i]?.trim() ? BRASS : "transparent",
+                      color: emails[i]?.trim() ? "#1a1a1a" : VEIN_TEXT,
+                      border: `1px solid ${emails[i]?.trim() ? BRASS : VEIN + "33"}`,
+                      fontFamily: fontStack.body,
+                      opacity: emails[i]?.trim() ? 1 : 0.55,
+                    }}
+                  >
+                    Send statement
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </React.Fragment>
+      ))}
     </div>
   );
 };
