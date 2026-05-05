@@ -1363,9 +1363,6 @@ const ExpenseLedger = () => {
 
 const MembershipScreen = ({ guests = [] }) => (
   <div className="px-6 pt-3 pb-32">
-    <p className="text-[10px] tracking-[0.5em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-      Bona fides
-    </p>
     <h1 className="text-4xl mt-2 leading-none" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
       Your <em style={{ color: BRASS }}>standing</em>
     </h1>
