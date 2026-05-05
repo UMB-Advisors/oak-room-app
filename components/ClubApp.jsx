@@ -1416,36 +1416,6 @@ const MembershipScreen = ({ guests = [] }) => (
 
     <LedgerCard />
 
-    <div className="mt-5 space-y-3.5">
-      {[
-        { d: "Apr 28", what: "Mastro's · party of 4", amt: "428.00" },
-        { d: "Apr 24", what: "Post Oak Saloon · bar tab", amt: "186.50" },
-        { d: "Apr 18", what: "Bouchée Patisserie · brunch", amt: "120.00" },
-        { d: "Apr 12", what: "Founders' dues · monthly", amt: "850.00", credit: true },
-      ].map((t, i) => (
-        <div key={i} className="flex justify-between items-baseline">
-          <div>
-            <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
-              {t.d}
-            </p>
-            <p className="text-sm mt-0.5" style={{ color: MARBLE, fontFamily: fontStack.display, fontStyle: t.credit ? "italic" : "normal" }}>
-              {t.what}
-            </p>
-          </div>
-          <span
-            className="font-light"
-            style={{
-              color: t.positive ? BRASS : MARBLE,
-              fontFamily: fontStack.mono,
-              fontSize: 14,
-            }}
-          >
-            {t.positive ? "" : "$"}{t.amt}
-          </span>
-        </div>
-      ))}
-    </div>
-
     <div className="mt-10 pt-6 text-center" style={{ borderTop: `1px solid ${VEIN}22` }}>
       <p className="text-[10px] tracking-[0.6em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
         A Fertitta property
