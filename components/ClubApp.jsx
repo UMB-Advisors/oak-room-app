@@ -479,10 +479,7 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
   );
 };
 
-const HomeScreen = ({ events, onRSVP }) => {
-  const [expandedId, setExpandedId] = useState(null);
-  const expanded = events.find((e) => e.id === expandedId);
-
+const HomeScreen = ({ events, onOpenReserve }) => {
   return (
     <div className="px-5 pt-3 pb-6">
       {/* Header */}
@@ -508,7 +505,7 @@ const HomeScreen = ({ events, onRSVP }) => {
         {events.map((e, i) => (
           <motion.button
             key={e.id}
-            onClick={() => setExpandedId(e.id)}
+            onClick={() => onOpenReserve(e.id)}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * Math.min(i, 5), duration: 0.4 }}
@@ -580,9 +577,9 @@ const HomeScreen = ({ events, onRSVP }) => {
         ))}
       </div>
 
-      {/* Expanded overlay — fixed to viewport so it stays put while page can't scroll behind */}
+      {/* Expanded overlay removed — ReserveDetailSheet handles this now */}
       <AnimatePresence>
-        {expanded && (
+        {false && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -2768,7 +2765,7 @@ export default function ClubApp() {
                     onQuickBook={handleQuickBook}
                   />
                 )}
-                {tab === "home" && <HomeScreen events={events} onRSVP={handleRSVP} />}
+                {tab === "home" && <HomeScreen events={events} onOpenReserve={(id) => reserveDispatch({ type: "OPEN", eventId: id })} />}
                 {tab === "card" && <MembershipScreen guests={guests} />}
                 {tab === "reserve" && (
                   <ReserveScreen
