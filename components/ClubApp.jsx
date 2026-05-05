@@ -1913,8 +1913,26 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
 
   const [guestOpen, setGuestOpen] = useState(false);
   const [guestCount, setGuestCount] = useState(1);
-  const [guestName, setGuestName] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
+  const [guestFields, setGuestFields] = useState([{ name: "", phone: "" }]);
+  const [guestSubmitted, setGuestSubmitted] = useState(false);
+
+  const updateCount = (next) => {
+    const n = Math.max(1, next);
+    setGuestCount(n);
+    setGuestFields((prev) => {
+      const arr = [...prev];
+      while (arr.length < n) arr.push({ name: "", phone: "" });
+      return arr.slice(0, n);
+    });
+    setGuestSubmitted(false);
+  };
+
+  const updateField = (i, key, val) => {
+    setGuestFields((prev) => prev.map((g, idx) => idx === i ? { ...g, [key]: val } : g));
+    setGuestSubmitted(false);
+  };
+
+  const canSubmitGuests = guestFields.some((g) => g.name.trim());
 
   return (
     <div className="px-6 pt-3 pb-32">
@@ -1934,7 +1952,7 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
       {/* Guest reservation panel */}
       <div className="mt-5 mb-1" style={{ border: `1px solid ${VEIN}33`, background: GRAPHITE_2 }}>
         <button
-          onClick={() => setGuestOpen((o) => !o)}
+          onClick={() => { setGuestOpen((o) => !o); setGuestSubmitted(false); }}
           className="w-full flex items-center justify-between px-4 py-3"
         >
           <div className="flex items-center gap-2">
@@ -1947,12 +1965,12 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            {!guestOpen && guestCount > 0 && (
+            {!guestOpen && (
               <span
                 className="text-[10px] tracking-[0.2em] uppercase"
-                style={{ color: BRASS, fontFamily: fontStack.body }}
+                style={{ color: guestSubmitted ? BRASS : BRASS, fontFamily: fontStack.body }}
               >
-                {guestCount} {guestCount === 1 ? "guest" : "guests"}
+                {guestSubmitted ? "Request sent" : `${guestCount} ${guestCount === 1 ? "guest" : "guests"}`}
               </span>
             )}
             <motion.span
@@ -1977,15 +1995,12 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
               <div className="px-4 py-4 space-y-4">
                 {/* Counter */}
                 <div className="flex items-center justify-between">
-                  <span
-                    className="text-[11px]"
-                    style={{ color: TEXT_DIM, fontFamily: fontStack.body }}
-                  >
+                  <span className="text-[11px]" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
                     Number of guests
                   </span>
                   <div className="flex items-center gap-4">
                     <button
-                      onClick={() => setGuestCount((c) => Math.max(1, c - 1))}
+                      onClick={() => updateCount(guestCount - 1)}
                       className="w-7 h-7 flex items-center justify-center"
                       style={{ border: `1px solid ${VEIN}44`, color: MARBLE }}
                     >
@@ -1998,7 +2013,7 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
                       {guestCount}
                     </span>
                     <button
-                      onClick={() => setGuestCount((c) => c + 1)}
+                      onClick={() => updateCount(guestCount + 1)}
                       className="w-7 h-7 flex items-center justify-center"
                       style={{ border: `1px solid ${VEIN}44`, color: MARBLE }}
                     >
@@ -2007,58 +2022,68 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch }) => {
                   </div>
                 </div>
 
-                {/* Name field */}
-                <div className="space-y-1">
-                  <label
-                    className="text-[10px] tracking-[0.25em] uppercase block"
-                    style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
-                  >
-                    Guest name
-                  </label>
-                  <input
-                    type="text"
-                    value={guestName}
-                    onChange={(e) => setGuestName(e.target.value)}
-                    placeholder="Full name"
-                    className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
-                    style={{
-                      border: `1px solid ${VEIN}44`,
-                      color: MARBLE,
-                      fontFamily: fontStack.body,
-                      "--tw-placeholder-color": TEXT_DIM,
-                    }}
-                  />
-                </div>
-
-                {/* Phone field */}
-                <div className="space-y-1">
-                  <label
-                    className="text-[10px] tracking-[0.25em] uppercase block"
-                    style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}
-                  >
-                    Phone number
-                  </label>
-                  <input
-                    type="tel"
-                    value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
-                    placeholder="(000) 000-0000"
-                    className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
-                    style={{
-                      border: `1px solid ${VEIN}44`,
-                      color: MARBLE,
-                      fontFamily: fontStack.body,
-                    }}
-                  />
-                </div>
+                {/* Per-guest fields */}
+                {guestFields.map((g, i) => (
+                  <div key={i} className="space-y-2">
+                    {guestCount > 1 && (
+                      <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: BRASS, fontFamily: fontStack.body }}>
+                        Guest {i + 1}
+                      </p>
+                    )}
+                    <input
+                      type="text"
+                      value={g.name}
+                      onChange={(e) => updateField(i, "name", e.target.value)}
+                      placeholder="Full name"
+                      className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
+                      style={{ border: `1px solid ${VEIN}44`, color: MARBLE, fontFamily: fontStack.body }}
+                    />
+                    <input
+                      type="tel"
+                      value={g.phone}
+                      onChange={(e) => updateField(i, "phone", e.target.value)}
+                      placeholder="(000) 000-0000"
+                      className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
+                      style={{ border: `1px solid ${VEIN}44`, color: MARBLE, fontFamily: fontStack.body }}
+                    />
+                  </div>
+                ))}
 
                 {/* Note */}
-                <p
-                  className="text-[11px] leading-relaxed"
-                  style={{ color: TEXT_DIM, fontFamily: fontStack.body }}
-                >
+                <p className="text-[11px] leading-relaxed" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
                   Up to 3 guests are included with your membership. The club will follow up to confirm your request.
                 </p>
+
+                {/* Submit */}
+                <AnimatePresence mode="wait">
+                  {guestSubmitted ? (
+                    <motion.p
+                      key="done"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="text-[11px] tracking-[0.25em] uppercase text-center py-2"
+                      style={{ color: BRASS, fontFamily: fontStack.body }}
+                    >
+                      Request sent · the club will confirm
+                    </motion.p>
+                  ) : (
+                    <motion.button
+                      key="btn"
+                      onClick={() => { if (canSubmitGuests) setGuestSubmitted(true); }}
+                      className="w-full py-2.5 text-[11px] tracking-[0.3em] uppercase"
+                      style={{
+                        background: canSubmitGuests ? BRASS : "transparent",
+                        color: canSubmitGuests ? "#1a1a1a" : VEIN_TEXT,
+                        border: `1px solid ${canSubmitGuests ? BRASS : VEIN + "33"}`,
+                        fontFamily: fontStack.body,
+                        opacity: canSubmitGuests ? 1 : 0.5,
+                      }}
+                    >
+                      Submit guest request
+                    </motion.button>
+                  )}
+                </AnimatePresence>
               </div>
             </motion.div>
           )}
