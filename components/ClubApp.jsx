@@ -144,7 +144,7 @@ const INITIAL_GUESTS = [
 
 const HOUSE_RULES = [
   { n: "I.", rule: "Discretion above all. No photographs past the foyer." },
-  { n: "II.", rule: "Dress with intention. Jacket required after 8pm." },
+  { n: "II.", rule: "Dress with intention." },
   { n: "III.", rule: "Phones silenced. Calls taken in the antechamber only." },
   { n: "IV.", rule: "Members are responsible for their guests, in conduct and in tab." },
   { n: "V.", rule: "What is said at the bar stays at the bar." },
