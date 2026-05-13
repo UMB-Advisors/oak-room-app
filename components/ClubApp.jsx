@@ -42,14 +42,14 @@ purple - ff00f7
 JOEL - alt-colors: 
 */
 const BRASS = "#00DB30";        // All main letters  - antique brass — single accent, echoes the brushed-steel pass
-const BRASS_DEEP = "#ff00f7";   // deeper brass for gradients, hover, pressed states
-const GRAPHITE = "#fff";     // primary surface
-const GRAPHITE_2 = "#fff";    // raised surface
-const CHARCOAL = "#fff";      // deepest
+const BRASS_DEEP = "#00ff2b";   // Most other text- deeper brass for gradients, hover, pressed states
+const GRAPHITE = "#000";     // background - primary surface
+const GRAPHITE_2 = "#009a22";    // raised surface
+const CHARCOAL = "#0000ff";      // Background shadow - deepest
 const MARBLE = "#fff";        // off-white, warm
 const MARBLE_2 = "#fff";      // veined shadow
-const VEIN = "#fff";          // cool grey vein — borders, dividers, SVG strokes
-const VEIN_TEXT = "#fff";     // brighter vein — text-only, ≈5.2:1 on GRAPHITE for WCAG AA
+const VEIN = "#ff00f7";          // cool grey vein — borders, dividers, SVG strokes
+const VEIN_TEXT = "#ff00f7";     // brighter vein — text-only, ≈5.2:1 on GRAPHITE for WCAG AA
 const TEXT_DIM = "#fff";      // bumped from #8B8E94 for AA contrast
 
 // Wallet pass — matches the physical Oak Room metal card: brushed warm
@@ -278,7 +278,8 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
         </p>
         <p
           className="mt-3 text-base italic leading-relaxed"
-          style={{ color: MARBLE + "EE", fontFamily: fontStack.display }}
+          //JOEL the following color was originally `MARBLE + "EE"` for some reason, I removed the "EE"
+          style={{ color: MARBLE, fontFamily: fontStack.display }}
         >
           {firstName} — we saw your request and have your favorite tequila in. Fortaleza Reposado, waiting for you.
         </p>
