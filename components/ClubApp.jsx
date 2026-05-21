@@ -2,6 +2,9 @@
 
 import React, { useState, useReducer, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import PremiumProfileCard from '@/components/rareui/PremiumProfileCard';
+import LiquidMetal from "@/components/rareui/LiquidMetal";
+import GlassShimmerButton from "@/components/rareui/GlassShimmerButton";
 import {
   Calendar,
   UserPlus,
@@ -40,17 +43,28 @@ const TEXT_DIM = "#A4A8AE";      // bumped from #8B8E94 for AA contrast
 /* 
 purple - ff00f7
 JOEL - alt-colors: 
-*/
 const BRASS = "#00DB30";        // All main letters  - antique brass — single accent, echoes the brushed-steel pass
 const BRASS_DEEP = "#00ff2b";   // Most other text- deeper brass for gradients, hover, pressed states
 const GRAPHITE = "#000";     // background - primary surface
-const GRAPHITE_2 = "#009a22";    // raised surface
-const CHARCOAL = "#0000ff";      // Background shadow - deepest
+const GRAPHITE_2 = "#26282C";    // raised surface
+const CHARCOAL = "#C0C0C0";      // Background shadow - deepest
 const MARBLE = "#fff";        // off-white, warm
 const MARBLE_2 = "#fff";      // veined shadow
 const VEIN = "#ff00f7";          // cool grey vein — borders, dividers, SVG strokes
 const VEIN_TEXT = "#ff00f7";     // brighter vein — text-only, ≈5.2:1 on GRAPHITE for WCAG AA
 const TEXT_DIM = "#fff";      // bumped from #8B8E94 for AA contrast
+*/
+
+const BRASS = "#B8945A";        // antique brass — single accent, echoes the brushed-steel pass
+const BRASS_DEEP = "#8E6E3F";   // deeper brass for gradients, hover, pressed states
+const GRAPHITE = "#1C1D20";      // primary surface
+const GRAPHITE_2 = "#26282C";    // raised surface
+const CHARCOAL = "#0F1012";      // deepest
+const MARBLE = "#F4F1EA";        // off-white, warm
+const MARBLE_2 = "#E8E3D8";      // veined shadow
+const VEIN = "#9AA3AE";          // cool grey vein — borders, dividers, SVG strokes
+const VEIN_TEXT = "#B8C2CC";     // brighter vein — text-only, ≈5.2:1 on GRAPHITE for WCAG AA
+const TEXT_DIM = "#A4A8AE";      // bumped from #8B8E94 for AA contrast
 
 // Wallet pass — matches the physical Oak Room metal card: brushed warm
 // silver, dark engraved oak, framed "OAK ROOM PRIVATE" wordmark. Different
@@ -224,6 +238,7 @@ const BrassButton = ({ children, onClick, variant = "solid", className = "" }) =
 
 // ─── Screens ───────────────────────────────────────────────────────
 
+
 const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
   const firstName = MEMBER.name.split(" ")[0];
 
@@ -251,7 +266,8 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
         For you
       </p>
       <h1
-        className="text-4xl mt-2 leading-none"
+      /* JOEL adding a squilly line under the title when hovered over */
+        className="text-4xl mt-2 leading-none title-quiet-welcome"
         style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400, letterSpacing: "-0.01em" }}
       >
         A quiet <em style={{ color: BRASS }}>welcome</em>
@@ -325,9 +341,12 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
                   <span
                     className="text-[9px] tracking-[0.3em] uppercase px-2 py-1 flex items-center gap-1"
                     style={{ color: BRASS, border: `1px solid ${BRASS}`, fontFamily: fontStack.body }}
-                  >
-                    <Check size={9} /> Held
-                  </span>
+                  > 
+                
+                     <Check size={9} />            
+                     held
+{/*                      <GlassShimmerButton className="GlassShimmerButton">Held</GlassShimmerButton>                
+ */}                  </span>
                 </div>
               </motion.div>
             ))}
@@ -2693,6 +2712,8 @@ It gently moves the frame up and down in a loop, creating a floating effect.
  */
   return (
     <>
+
+    {/* JOEL : adding a slow floating animation to the phone frame */}
     <style>{`
     @keyframes float {
       0%   { transform: translateY(0px); }
@@ -2700,10 +2721,13 @@ It gently moves the frame up and down in a loop, creating a floating effect.
       100% { transform: translateY(0px); }
     }
   `}</style>
+   
     <div
       // Desktop: brass-glow background + flex-center the phone-frame mockup.
       // Mobile / PWA standalone: outer wrapper just fills the viewport so the
       // inner div can go edge-to-edge under the real iOS status bar.
+
+      ////JOEL change: added an animation property to create a floating effect on the phone frame.
       className="min-h-screen w-full md:flex md:items-center md:justify-center md:p-4"
       style={{
         background: `
@@ -2713,18 +2737,51 @@ It gently moves the frame up and down in a loop, creating a floating effect.
         fontFamily: fontStack.body,
         animation: 'float 6s ease-in-out infinite' 
       }}
-    >
-      {/* Phone frame — chrome only on desktop. Mobile goes edge-to-edge. */}
+    > 
+      {/* Phone frame — chrome only on desktop. Mobile goes edge-to-edge.
+        JOEL: this is the phone frame
+        Add in in color movement around the frame 
+      */}
+       <style>{`
+   @keyframes animate {
+        0% {
+          background-position: 0 0;
+        }
+        25% {
+          background-position: 30% 0;
+        }
+        50% {
+          background-position: 90% 0;
+        }
+        75% {
+          background-position: 30% 0;
+        }
+        100% {
+          background-position: 0 0;
+        }
+  }
+  `}</style>
+  {/* HERE! */}
       <div
         className="relative w-full h-screen md:h-[min(880px,95vh)] md:w-[min(420px,100%)] md:mx-auto md:rounded-[44px] md:p-3 md:border"
         style={{
-          background: GRAPHITE,
+          background: `linear-gradient(45deg, ${BRASS}, ${BRASS_DEEP}, ${GRAPHITE}, ${BRASS_DEEP})`,
+          /* background: 'linear-gradient(in lch 45deg,red,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8,red)', */
+          transition: "opacity .3s ease-in-out",
+          fllter: 'blur(50px)',
+          border: `2px solid ${BRASS}`,
+          backgroundSize: '300%',
+          animation: 'animate 20s linear infinite',
+          
           // Inline styles only kick in on md+ via Tailwind class composition.
           // Mobile gets none of these (no border, no shadow, no rounding).
         }}
       >
         {/* Apply the desktop-only frame chrome via a sibling overlay.
-            Done as an absolutely-positioned div so we can hide it cleanly on mobile. */}
+            Done as an absolutely-positioned div so we can hide it cleanly on mobile.
+            
+           JOEL: THIS IS THE BACKGROUND GLOW 
+            */}
         <div
           className="hidden md:block absolute inset-0 pointer-events-none rounded-[44px]"
           style={{
@@ -2736,12 +2793,11 @@ It gently moves the frame up and down in a loop, creating a floating effect.
             border: `1px solid ${VEIN}66`,
           }}
         />
-
         {/* Screen */}
         <div
           className="relative w-full h-full overflow-hidden flex flex-col md:rounded-[32px]"
           style={{
-            background: GRAPHITE,
+            background: GRAPHITE
           }}
         >
           {/* Fake status bar — only on desktop preview where there's no real one.
