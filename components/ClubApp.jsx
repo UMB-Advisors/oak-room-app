@@ -2770,7 +2770,7 @@ It gently moves the frame up and down in a loop, creating a floating effect.
           transition: "opacity .3s ease-in-out",
           fllter: 'blur(50px)',
           border: `2px solid ${BRASS}`,
-          backgroundSize: '300%',
+          backgroundSize: '500%',
           animation: 'animate 20s linear infinite',
           
           // Inline styles only kick in on md+ via Tailwind class composition.

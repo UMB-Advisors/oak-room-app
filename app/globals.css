@@ -23,15 +23,17 @@ html, body {
     color: rgba(255, 255, 255, .8); */
 }
 
-.title-quiet-welcome:hover {
+.title-quiet-welcome {
  /*  text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.2); */
-     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg id=%27squiggle-link%27 xmlns=%27http://www.w3.org/2000/svg%27 xmlns:xlink=%27http://www.w3.org/1999/xlink%27 xmlns:ev=%27http://www.w3.org/2001/xml-events%27 viewBox=%270 0 10 18%27%3E%3Cstyle type=%27text/css%27%3E.squiggle{animation:shift .5s linear infinite;}@keyframes shift {from {transform:translateX%28-10px%29;}to {transform:translateX%280%29;}}%3C/style%3E%3Cpath fill=%27none%27 stroke=%27%2301b96b%27 stroke-width=%270.5%27 class=%27squiggle%27 d=%27M0,17.5 c 2.5,0,2.5,-1.5,5,-1.5 s 2.5,1.5,5,1.5 c 2.5,0,2.5,-1.5,5,-1.5 s 2.5,1.5,5,1.5%27 /%3E%3C/svg%3E");
+     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20id%3D'squiggle-link'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2020%204'%3E%3Cstyle%3E.s%7Banimation%3Ashift%202.25s%20linear%20infinite%3B%7D%40keyframes%20shift%7Bfrom%7Btransform%3AtranslateX(-10px)%3B%7Dto%7Btransform%3AtranslateX(0)%3B%7D%7D%3C%2Fstyle%3E%3Cpath%20fill%3D'none'%20stroke%3D'%23b8945a'%20stroke-width%3D'0.20'%20class%3D's'%20d%3D'M0%2C3.5%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3'%2F%3E%3C%2Fsvg%3E");
     background-position: 0 100%;
-    background-size: auto 36px;
+    width: 125%;
+    background-size: auto .15em;
     background-repeat: repeat;
     text-decoration: none;
-    border-bottom: none;
-    padding-bottom: 3px;
+    opacity: .8;
+    border-bottom: 5px solid transparent;
+    padding: 5px 0 5px 10px;
     word-break: break-word
 }
 
