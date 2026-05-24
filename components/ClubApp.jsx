@@ -268,7 +268,7 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
       <h1
       /* JOEL adding a squilly line under the title when hovered over */
         className="text-4xl mt-2 leading-none title-quiet-welcome"
-        style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400, letterSpacing: "-0.01em" }}
+        style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400, letterSpacing: "-0.01em", textShadow: "0px 0px 4px rgba(255, 255, 255, 0.2)" }}
       >
         A quiet <em style={{ color: BRASS }}>welcome</em>
       </h1>
@@ -2770,8 +2770,8 @@ It gently moves the frame up and down in a loop, creating a floating effect.
           transition: "opacity .3s ease-in-out",
           fllter: 'blur(50px)',
           border: `2px solid ${BRASS}`,
-          backgroundSize: '500%',
-          animation: 'animate 20s linear infinite',
+          backgroundSize: '200%',
+          animation: 'animate 10s linear infinite',
           
           // Inline styles only kick in on md+ via Tailwind class composition.
           // Mobile gets none of these (no border, no shadow, no rounding).

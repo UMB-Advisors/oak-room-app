@@ -25,7 +25,9 @@ html, body {
 
 .title-quiet-welcome {
  /*  text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.2); */
-     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20id%3D'squiggle-link'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2020%204'%3E%3Cstyle%3E.s%7Banimation%3Ashift%202.25s%20linear%20infinite%3B%7D%40keyframes%20shift%7Bfrom%7Btransform%3AtranslateX(-10px)%3B%7Dto%7Btransform%3AtranslateX(0)%3B%7D%7D%3C%2Fstyle%3E%3Cpath%20fill%3D'none'%20stroke%3D'%23b8945a'%20stroke-width%3D'0.20'%20class%3D's'%20d%3D'M0%2C3.5%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3'%2F%3E%3C%2Fsvg%3E");
+    /* GOLD OPTION: */
+    /* background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20id%3D'squiggle-link'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2020%204'%3E%3Cstyle%3E.s%7Banimation%3Ashift%202.25s%20linear%20infinite%3B%7D%40keyframes%20shift%7Bfrom%7Btransform%3AtranslateX(-10px)%3B%7Dto%7Btransform%3AtranslateX(0)%3B%7D%7D%3C%2Fstyle%3E%3Cpath%20fill%3D'none'%20stroke%3D'%23b8945a'%20stroke-width%3D'0.20'%20class%3D's'%20d%3D'M0%2C3.5%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3'%2F%3E%3C%2Fsvg%3E"); */
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20id%3D'squiggle-link'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2020%204'%3E%3Cstyle%3E.s%7Banimation%3Ashift%202.25s%20linear%20infinite%3B%7D%40keyframes%20shift%7Bfrom%7Btransform%3AtranslateX(-10px)%3B%7Dto%7Btransform%3AtranslateX(0)%3B%7D%7D%3C%2Fstyle%3E%3Cpath%20fill%3D'none'%20stroke%3D'%234f8c5e'%20stroke-width%3D'0.20'%20class%3D's'%20d%3D'M0%2C3.5%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3%20c2.5%2C0%2C2.5%2C-3%2C5%2C-3%20s2.5%2C3%2C5%2C3'%2F%3E%3C%2Fsvg%3E");
     background-position: 0 100%;
     width: 125%;
     background-size: auto .15em;
@@ -34,7 +36,9 @@ html, body {
     opacity: .8;
     border-bottom: 5px solid transparent;
     padding: 5px 0 5px 10px;
-    word-break: break-word
+    word-break: break-word;
+    margin-left: -1.3rem;
+    /* text-shadow: 2px 1px #0F1012; */
 }
 
 .metal {
