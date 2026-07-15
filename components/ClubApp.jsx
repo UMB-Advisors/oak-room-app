@@ -18,6 +18,9 @@ import {
   Users,
   Sparkles,
   Wallet,
+  PlaneTakeoff,
+  Car,
+  Lock,
 } from "lucide-react";
 
 // ───────────────────────────────────────────────────────────────────
@@ -110,6 +113,7 @@ const EVENTS = [
     teaser: "Capsule preview · poolside",
     image: "/events/poolside.jpg",
     rsvp: false,
+    earlyAccess: "Founders window · opens May 7",
   },
   {
     id: 5,
@@ -134,6 +138,7 @@ const EVENTS = [
     teaser: "Rye flight · Saloon",
     image: "/events/whistlepig.jpg",
     rsvp: false,
+    earlyAccess: "Founders window · opens May 20",
   },
 ];
 
@@ -154,6 +159,30 @@ const RESERVATIONS_AVAIL = [
   { room: "The Post Oak Saloon", desc: "Whiskey bar, seats 6", times: ["7:00", "9:30"] },
   { room: "Bloom & Bee", desc: "Garden room, seats 4", times: ["6:00", "8:00", "9:30"] },
   { room: "Mastro's · House Table", desc: "Private dining, seats 10", times: ["7:30"] },
+];
+
+const HELICOPTER_ROUTES = [
+  { label: "Houston Skyline", desc: "20-min scenic loop · up to 4 guests" },
+  { label: "Hill Country Day Trip", desc: "Full-day charter · up to 4 guests" },
+  { label: "IAH Private Terminal Transfer", desc: "Direct to George Bush Intercontinental · up to 4 guests" },
+];
+
+const CHAUFFEUR_ROUTES = [
+  { label: "To / From The Post Oak", desc: "Black car · up to 3 guests" },
+  { label: "Downtown / Galleria Circuit", desc: "Black car · up to 3 guests" },
+];
+
+const INITIAL_PREFERENCES = {
+  dietary: "No shellfish",
+  table: "Window, Saloon side",
+  pour: "Fortaleza Reposado, neat",
+  cigar: "Padrón 1926 No. 9",
+};
+
+const INITIAL_CELLAR = [
+  { id: 1, item: "'19 Tres Colline Pinot Noir", qty: "3 bottles", note: "Half-bottle set aside for wine nights" },
+  { id: 2, item: "Padrón 1926 No. 9", qty: "8 count", note: "Humidor, Saloon side" },
+  { id: 3, item: "Fortaleza Reposado", qty: "1 bottle", note: "Personal reserve behind the bar" },
 ];
 
 // ─── Helpers ───────────────────────────────────────────────────────
@@ -206,9 +235,143 @@ const BrassButton = ({ children, onClick, variant = "solid", className = "" }) =
   );
 };
 
+// A collapsible request panel — same idiom as the Reserve tab's "Book a Table"
+// flow. Member picks an option and a date; submitting shows a held-pending state.
+// Self-contained (concierge confirms out of band), matching the table panel.
+const RequestPanel = ({ icon: Icon, label, options, note }) => {
+  const [open, setOpen] = useState(false);
+  const [choice, setChoice] = useState(null);
+  const [date, setDate] = useState("");
+  const [sent, setSent] = useState(false);
+  const canSubmit = !!choice && !!date;
+
+  return (
+    <div className="mt-3 mb-1" style={{ border: `1px solid ${VEIN}33`, background: GRAPHITE_2 }}>
+      <button
+        onClick={() => { setOpen((o) => !o); setSent(false); }}
+        className="w-full flex items-center justify-between px-4 py-3"
+      >
+        <div className="flex items-center gap-2">
+          <Icon size={14} style={{ color: BRASS }} />
+          <span className="text-[11px] tracking-[0.25em] uppercase" style={{ color: MARBLE, fontFamily: fontStack.body }}>
+            {label}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {!open && (
+            <span className="text-[10px] tracking-[0.2em] uppercase" style={{ color: BRASS, fontFamily: fontStack.body }}>
+              {sent ? "Request sent" : choice ? choice : ""}
+            </span>
+          )}
+          <motion.span
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            style={{ color: VEIN_TEXT, display: "inline-block", lineHeight: 1 }}
+          >
+            ▾
+          </motion.span>
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            style={{ overflow: "hidden", borderTop: `1px solid ${VEIN}22` }}
+          >
+            <div className="px-4 py-4 space-y-4">
+              {/* Route selector */}
+              <div className="space-y-2">
+                <p className="text-[10px] tracking-[0.25em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+                  Route
+                </p>
+                <div className="space-y-2">
+                  {options.map((o) => (
+                    <button
+                      key={o.label}
+                      onClick={() => { setChoice(o.label); setSent(false); }}
+                      className="w-full text-left px-3 py-2.5 flex items-center justify-between"
+                      style={{
+                        border: `1px solid ${choice === o.label ? BRASS : VEIN + "44"}`,
+                        background: choice === o.label ? BRASS + "11" : "transparent",
+                        fontFamily: fontStack.display,
+                      }}
+                    >
+                      <span className="min-w-0">
+                        <span className="block text-[14px] leading-tight" style={{ color: choice === o.label ? BRASS : MARBLE }}>
+                          {o.label}
+                        </span>
+                        <span className="block text-[10px] tracking-[0.12em] uppercase mt-0.5" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+                          {o.desc}
+                        </span>
+                      </span>
+                      {choice === o.label && <Check size={13} style={{ color: BRASS, flexShrink: 0 }} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Date */}
+              <div className="space-y-1">
+                <p className="text-[10px] tracking-[0.25em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+                  Preferred date
+                </p>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => { setDate(e.target.value); setSent(false); }}
+                  className="w-full bg-transparent px-3 py-2 text-[13px] outline-none"
+                  style={{ border: `1px solid ${VEIN}44`, color: date ? MARBLE : VEIN_TEXT, fontFamily: fontStack.body, colorScheme: "dark" }}
+                />
+              </div>
+
+              <p className="text-[11px] leading-relaxed" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
+                {note}
+              </p>
+
+              <AnimatePresence mode="wait">
+                {sent ? (
+                  <motion.p
+                    key="done"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-[11px] tracking-[0.25em] uppercase text-center py-2"
+                    style={{ color: BRASS, fontFamily: fontStack.body }}
+                  >
+                    Request sent · the club will confirm
+                  </motion.p>
+                ) : (
+                  <motion.button
+                    key="btn"
+                    onClick={() => { if (canSubmit) { setSent(true); setOpen(false); } }}
+                    className="w-full py-2.5 text-[11px] tracking-[0.3em] uppercase"
+                    style={{
+                      background: canSubmit ? BRASS : "transparent",
+                      color: canSubmit ? "#1a1a1a" : VEIN_TEXT,
+                      border: `1px solid ${canSubmit ? BRASS : VEIN + "33"}`,
+                      fontFamily: fontStack.body,
+                      opacity: canSubmit ? 1 : 0.5,
+                    }}
+                  >
+                    Submit request
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 // ─── Screens ───────────────────────────────────────────────────────
 
-const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
+const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook, requests = [] }) => {
   const firstName = MEMBER.name.split(" ")[0];
 
   // Hand-curated picks with rationale — feels staff-selected, not algorithmic
@@ -365,6 +528,14 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
                 >
                   {e.why}
                 </p>
+                {e.earlyAccess && (
+                  <p
+                    className="flex items-center gap-1 text-[8px] tracking-[0.2em] uppercase mt-1.5"
+                    style={{ color: BRASS, fontFamily: fontStack.body }}
+                  >
+                    <Lock size={8} /> {e.earlyAccess}
+                  </p>
+                )}
               </div>
               <span
                 className="text-[9px] tracking-[0.3em] uppercase px-2 py-1 flex-shrink-0 flex items-center gap-1"
@@ -474,6 +645,19 @@ const ForYouScreen = ({ events, onRSVP, onConcierge, onQuickBook }) => {
         >
           <Send size={12} /> Send note
         </button>
+
+        {requests.length > 0 && (
+          <div className="mt-4 pt-4 space-y-2" style={{ borderTop: `1px dashed ${VEIN}33` }}>
+            <p className="text-[9px] tracking-[0.3em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+              Recent requests
+            </p>
+            {requests.slice(0, 3).map((r, i) => (
+              <p key={i} className="text-[11px] italic leading-snug" style={{ color: MARBLE + "99", fontFamily: fontStack.display }}>
+                "{r}"
+              </p>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -572,6 +756,15 @@ const HomeScreen = ({ events, onOpenReserve }) => {
               >
                 {e.teaser}
               </p>
+
+              {e.earlyAccess && (
+                <p
+                  className="flex items-center gap-1 text-[8px] tracking-[0.2em] uppercase mt-1"
+                  style={{ color: BRASS, fontFamily: fontStack.body }}
+                >
+                  <Lock size={8} /> Early access
+                </p>
+              )}
             </div>
           </motion.button>
         ))}
@@ -1405,7 +1598,7 @@ const ExpenseLedger = () => {
   );
 };
 
-const MembershipScreen = ({ guests = [] }) => (
+const MembershipScreen = ({ guests = [], preferences, onUpdatePreference, cellar = [], onCellarRequest }) => (
   <div className="px-6 pt-3 pb-32">
     <h1 className="text-4xl mt-2 leading-none" style={{ fontFamily: fontStack.display, color: MARBLE, fontWeight: 400 }}>
       Your <em style={{ color: BRASS }}>standing</em>
@@ -1553,6 +1746,63 @@ const MembershipScreen = ({ guests = [] }) => (
         })}
       </div>
     )}
+
+    <Divider label="Your preferences" />
+
+    <p className="text-[11px] leading-relaxed mb-4" style={{ color: TEXT_DIM, fontFamily: fontStack.body }}>
+      Remembered and quietly applied to your reservations and events.
+    </p>
+
+    <div className="space-y-4">
+      {[
+        { k: "dietary", label: "Dietary" },
+        { k: "table", label: "Preferred table" },
+        { k: "pour", label: "Usual pour" },
+        { k: "cigar", label: "Cigar" },
+      ].map((f) => (
+        <div key={f.k}>
+          <label className="text-[9px] tracking-[0.3em] uppercase" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+            {f.label}
+          </label>
+          <input
+            value={preferences?.[f.k] ?? ""}
+            onChange={(e) => onUpdatePreference?.(f.k, e.target.value)}
+            className="w-full bg-transparent border-b py-2 mt-1 outline-none text-sm"
+            style={{ borderColor: VEIN, color: MARBLE, fontFamily: fontStack.display, fontStyle: "italic" }}
+          />
+        </div>
+      ))}
+    </div>
+
+    <Divider label="Your cellar" />
+
+    <div className="space-y-3">
+      {cellar.map((c) => (
+        <div key={c.id} className="p-4 flex items-center justify-between" style={{ background: GRAPHITE_2, border: `1px solid ${VEIN}33` }}>
+          <div className="flex items-start gap-3 min-w-0">
+            <Wine size={16} style={{ color: BRASS, marginTop: 2, flexShrink: 0 }} />
+            <div className="min-w-0">
+              <p className="text-base leading-tight" style={{ fontFamily: fontStack.display, color: MARBLE }}>
+                {c.item}
+              </p>
+              <p className="text-[10px] tracking-[0.2em] uppercase mt-1" style={{ color: VEIN_TEXT, fontFamily: fontStack.body }}>
+                {c.qty}
+              </p>
+              <p className="text-[11px] italic mt-1" style={{ color: MARBLE + "88", fontFamily: fontStack.display }}>
+                {c.note}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => onCellarRequest?.(c.item)}
+            className="text-[9px] tracking-[0.25em] uppercase px-2.5 py-1.5 flex-shrink-0"
+            style={{ color: BRASS, border: `1px solid ${BRASS}`, fontFamily: fontStack.body }}
+          >
+            Restock
+          </button>
+        </div>
+      ))}
+    </div>
 
     <Divider label="The ledger" />
 
@@ -1862,6 +2112,14 @@ const ReserveDetailSheet = ({ event, state, dispatch, onSubmit }) => {
               >
                 {event.host}
               </p>
+              {event.earlyAccess && (
+                <p
+                  className="flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase mt-2"
+                  style={{ color: BRASS, fontFamily: fontStack.body }}
+                >
+                  <Lock size={11} /> {event.earlyAccess}
+                </p>
+              )}
             </div>
 
             {sent ? (
@@ -2352,6 +2610,22 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch, guestPanelTrigger })
         </AnimatePresence>
       </div>
 
+      {/* Private aviation */}
+      <RequestPanel
+        icon={PlaneTakeoff}
+        label="Charter a Flight"
+        options={HELICOPTER_ROUTES}
+        note="Requests are held pending concierge confirmation — pricing and departure point confirmed by phone."
+      />
+
+      {/* Ground transport */}
+      <RequestPanel
+        icon={Car}
+        label="Ground Transport"
+        options={CHAUFFEUR_ROUTES}
+        note="A house car with chauffeur. The concierge confirms timing and pickup."
+      />
+
       <Divider label="Upcoming · open seats" />
 
       <div className="space-y-3">
@@ -2407,6 +2681,14 @@ const ReserveScreen = ({ events, onSubmit, state, dispatch, guestPanelTrigger })
               >
                 {e.teaser}
               </p>
+              {e.earlyAccess && (
+                <p
+                  className="flex items-center gap-1 text-[9px] tracking-[0.2em] uppercase mt-1.5"
+                  style={{ color: BRASS, fontFamily: fontStack.body }}
+                >
+                  <Lock size={9} /> {e.earlyAccess}
+                </p>
+              )}
             </div>
           </button>
         ))}
@@ -2576,6 +2858,9 @@ export default function ClubApp() {
   const [guests, setGuests] = useState(INITIAL_GUESTS);
   const [toast, setToast] = useState(null);
   const [guestPanelTrigger, setGuestPanelTrigger] = useState(0);
+  const [preferences, setPreferences] = useState(INITIAL_PREFERENCES);
+  const [cellar] = useState(INITIAL_CELLAR);
+  const [requests, setRequests] = useState([]);
   const [reserveState, reserveDispatch] = useReducer(
     reserveReducer,
     initialReserveState
@@ -2589,7 +2874,13 @@ export default function ClubApp() {
     reserveDispatch({ type: "OPEN", eventId });
   };
 
+  const handleUpdatePreference = (key, value) =>
+    setPreferences((prev) => ({ ...prev, [key]: value }));
+  const handleCellarRequest = (item) =>
+    showToast(`Restock requested · ${item} · concierge notified`);
+
   const handleConcierge = (msg) => {
+    if (msg && msg.trim()) setRequests((prev) => [msg, ...prev]);
     if (msg && /reserve|guest/i.test(msg)) {
       const e = nextOpenEvent();
       if (e) {
@@ -2768,10 +3059,19 @@ export default function ClubApp() {
                     onRSVP={handleRSVP}
                     onConcierge={handleConcierge}
                     onQuickBook={handleQuickBook}
+                    requests={requests}
                   />
                 )}
                 {tab === "home" && <HomeScreen events={events} onOpenReserve={(id) => reserveDispatch({ type: "OPEN", eventId: id })} />}
-                {tab === "card" && <MembershipScreen guests={guests} />}
+                {tab === "card" && (
+                  <MembershipScreen
+                    guests={guests}
+                    preferences={preferences}
+                    onUpdatePreference={handleUpdatePreference}
+                    cellar={cellar}
+                    onCellarRequest={handleCellarRequest}
+                  />
+                )}
                 {tab === "reserve" && (
                   <ReserveScreen
                     events={events}
